@@ -5,4 +5,6 @@ PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
 [[ -s "$HOME/.nvm/nvm.sh" ]] && source "$HOME/.nvm/nvm.sh"
 
+PATH=$PATH:$HOME/.bin
+
 PS1="\[\033[01;172m\]\w\[\033[00m\]\$(__git_ps1)\$ "
