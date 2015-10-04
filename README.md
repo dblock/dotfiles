@@ -18,3 +18,6 @@
      (_)(`,(_,'L_,_____       ____....__   _.'
       "' "             """""""          """      cgmm
 ```
+
+See [scripts/setup.sh](scripts/setup.sh), YMMV.
+

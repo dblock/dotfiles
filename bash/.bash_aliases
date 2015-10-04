@@ -2,5 +2,9 @@ alias rake='bundle exec rake'
 alias rspec='bundle exec rspec'
 alias spork='bundle exec spork'
 alias autotest='bundle exec autotest'
-
 alias gpum='git pull upstream master'
+alias ow='AWS_USER=db AWS_PUBLICKEY=~/.ssh/id_rsa_db@artsymail.com AWS_ID=AKIAJEGCETHCFS5J35IA AWS_SECRET=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'
+alias gr='EMBEDLY_API_KEY=a1f82558d8134f6cbebceb9e67d04980 FLUX_URL=http://gravity:U5bJ+1OKqHj6@staging.flux.artsy.net/gravity-staging DISABLE_FORWARD_PROXY=1 SOLR_URL=https://gravity:4JqdjifNa4@staging.solr.artsy.net/solr/dblock-development TOKEN_TRUST_KEY=secret TWITTER_KEY=9g0jLFPfSHclz4qa9NQRA TWITTER_SECRET=1mvK1jxJtTd0bbjLFVJM8HsqqGBbIfFrvwioQlXLvg FACEBOOK_APP_ID=354835897885180 FACEBOOK_APP_SECRET=39508ec754b9d67d1f14df37c9b44425 IMAGES_URL=http://static.artsy.net rails s'
+alias tc='TWITTER_CONSUMER_KEY=EkDSyXWfxImb43FL2iCmpg TWITTER_CONSUMER_SECRET=cDmhXRg1MhhZDOXzMz0LOSipAa9Djn87bVsvBrgF3Y TWITTER_OAUTH_TOKEN=621234599-pDfBIP0sYhjQKTpmwoOSB8rP4kpDJT3M8Zue8zei TWITTER_OAUTH_TOKEN_SECRET=od0pT8TCCOcojxxvYmoA4ETHbWzeXHg2pWO1Pltc0 ARTSY_API_CLIENT_ID=84e980f3a17a788c9fc6 ARTSY_API_CLIENT_SECRET=041cd327a4e7af52e8a780289baa424d'
+alias artsy='ARTSY_API_CLIENT_ID=14e2412762cfe5346429 ARTSY_API_CLIENT_SECRET=ee75944bf750a9796dc93c6dea0aef58'
+
