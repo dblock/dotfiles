@@ -12,3 +12,5 @@ PS1="\[\033[01;172m\]\w\[\033[00m\]\$(__git_ps1)\$ "
 
 export CLICOLOR=1
 export LSCOLORS=ExFxCxDxBxegedabagacad
+
+ssh-add
