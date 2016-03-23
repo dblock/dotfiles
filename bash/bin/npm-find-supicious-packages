@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+curl https://gist.githubusercontent.com/azer/db27417ee84b5f34a6ea/raw/50ab7ef26dbde2d4ea52318a3590af78b2a21162/gistfile1.txt \
+    | sed 's/^\(.*\)$/ \1@/' \
+    > /tmp/suspicious-packages.txt \
+    && npm ls \
+    | grep -f /tmp/suspicious-packages.txt
