@@ -37,7 +37,7 @@ else
   host="$(echo ${url/$user@/} | cut -d/ -f1 | cut -d: -f1)"
   # extract the github user and path (if any)
   org="$(echo $url | cut -d: -f2 | cut -d/ -f1 )"
-  repo="$(echo $url | grep / | cut -d/ -f2- | cut -d. -f1)"
+  repo="$(echo $url | grep / | cut -d/ -f2- | rev | cut -d. -f2- | rev)"
   # upstream and fork
   upstream=git@github.com:$org/$repo.git
   fork=git@github.com:$name/$repo.git
