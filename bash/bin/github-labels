@@ -7,7 +7,7 @@ repo="$1"
 
 echo "github-labels: creating labels in $repo"
 
-if [ $(which ghi) == "" ] ; then
+if [ "$(which ghi)" == "" ] ; then
   echo "github-labels: installing ghi"
   gem install ghi
 fi
