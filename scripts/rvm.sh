@@ -2,11 +2,10 @@
 
 set -e
 
-bash -s stable < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer)
+curl -sSL https://get.rvm.io | bash -s stable --ruby
 
 rvm autolibs enable
 
-rvm install 1.9.3
-rvm install 2.0
+rvm install 2.3.1
 
-rvm use 2.0 --default
+rvm use 2.3.1 --default
