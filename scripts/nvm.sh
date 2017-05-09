@@ -2,10 +2,9 @@
 
 set -e
 
-curl https://raw.github.com/creationix/nvm/master/install.sh | sh
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+
 source ~/.bash_profile
 
-nvm install 0.10
-nvm use 0.10
+nvm install stable
 
-npm install -g coffee-script@1.0.1
