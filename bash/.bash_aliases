@@ -3,4 +3,4 @@ alias rspec='bundle exec rspec'
 alias spork='bundle exec spork'
 alias autotest='bundle exec autotest'
 alias gpum='git pull upstream master'
-
+alias ra='bundle exec rubocop -a ; bundle exec rubocop --auto-gen-config'
