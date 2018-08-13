@@ -1,0 +1,12 @@
+#!/bin/bash
+
+MONGOD_LOCK_FILE=/usr/local/var/mongodb/mongod.lock
+
+brew services stop mongodb
+
+if [ -f $MONGOD_LOCK_FILE ]; then
+  echo "Deleting $MONGOD_LOCK_FILE"
+  sudo rm $MONGOD_LOCK_FILE
+fi
+
+brew services start mongodb
