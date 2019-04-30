@@ -17,6 +17,8 @@ do
       git fetch
       echo "Pulling"
       git pull
+      echo "GCing"
+      git gc
     else
       echo "Skipping because it doesn't look like it has a .git folder."
     fi
