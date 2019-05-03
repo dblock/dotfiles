@@ -2,7 +2,7 @@
 
 set -e
 
-ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 brew -v
 mkdir -p /usr/local/Cellar
