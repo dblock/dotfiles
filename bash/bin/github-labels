@@ -14,9 +14,10 @@ fi
 
 echo "ghi label --list -- $repo"
 labels="$(ghi label --list -- $repo)"
+labels="${labels##*$'\n'}"
 
 if [ "$labels" != "None." ] ; then
-  echo "github-labels: error - please delete labels in $repo first"
+  echo "github-labels: error - please delete existing labels ($labels, ...) in $repo first"
   exit 1
 fi
 
