@@ -1,0 +1,4 @@
+#!/bin/bash
+branch=$(git rev-parse --abbrev-ref HEAD)
+echo "git pull upstream $branch"
+git pull upstream $branch
