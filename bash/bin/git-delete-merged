@@ -1,4 +1,5 @@
 #!/bin/bash
 
-git branch --merged | grep -v master | xargs git branch -d
-git branch -r --merged | awk -F'/' '/^ *origin/{if(!match($0, /(>|master)/)){print $2}}' | xargs git push origin --delete
+git branch --merged | grep -v -E -- 'mainline|master|main' | xargs git branch -d
+
+git branch -r --merged | awk -F'/' '/^ *origin/{if(!match($0, /(>|mainline|master|main)/)){print $2}}' | xargs git push origin --delete
