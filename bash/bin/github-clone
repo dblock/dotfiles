@@ -46,14 +46,14 @@ fi
 echo "github-clone: cloning $org/$repo into $repo/$org and $repo/$name"
 
 # check whether directory already exists
-[ -d "$repo/$name" ] && { echo "github-clone error: $repo/$name already exists" ; exit 1; }
-[ -d "$repo/$org" ] && { echo "github-clone error: $repo/$org already exists" ; exit 1; }
+[ -d "$repo/$repo-$name" ] && { echo "github-clone error: $repo/$repo-$name already exists" ; exit 1; }
+[ -d "$repo/$repo-upstream" ] && { echo "github-clone error: $repo/$repo-upstream already exists" ; exit 1; }
 
 mkdir -p $repo
 pushd $repo
-git clone $upstream $org
-git clone $fork $name
-cd $name
+git clone $upstream $repo-upstream
+git clone $fork $repo-$name
+cd $repo-$name
 git remote add upstream $upstream
 cd ..
 pwd
