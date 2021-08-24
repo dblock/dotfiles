@@ -1,0 +1,30 @@
+#!/bin/bash
+# https://jeffmikels.org/posts/bash-create-or-attach-to-screen-session-on-login/
+
+# start screen session if not already started
+# or connect to screen session if not already in it
+if [ ${TERM:0:6} != "screen" ]
+then
+    echo "Attempting to connect/create screen session."
+
+    # We don't want to forcibly disconnect other sessions if they are
+    # Attached, so we check for Detached sessions first
+    HAVE_DETACHED=$(screen -list | grep Detached)
+    HAVE_ATTACHED=$(screen -list | grep Attached)
+
+    if [ -n "$HAVE_DETACHED" ]
+    then
+        echo "Attaching to existing screen session ..."
+        exec screen -r
+
+    elif [ -n "$HAVE_ATTACHED" ]
+    then
+        echo "Taking over a session ..."
+        exec screen -rd
+    else
+        echo "There are no running screen sessions, creating a new one."
+        exec screen
+    fi
+else
+    echo "In a screen session. Cool."
+fi
