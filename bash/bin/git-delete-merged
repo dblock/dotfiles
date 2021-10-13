@@ -8,4 +8,4 @@ CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 git branch -r --merged | awk -F'/' "/^ *origin/{if(!match(\$0, /(>|$DEFAULT_BRANCH)/)){print \$2}}" | xargs git push origin --delete
 
 # https://medium.com/opendoor-labs/cleaning-up-branches-with-githubs-squash-merge-43138cc7585e
-comm -12 <(git branch | sed "s/ *//g" | sort) <(git remote prune origin | sed "s/^.*origin\///g" | sort) | xargs -L1 -J % git branch -D %
+comm -12 <(git branch | sed "s/ *//g" | sort) <(git remote prune origin | sed "s/^.*origin\///g" | sort) | xargs git branch -D
