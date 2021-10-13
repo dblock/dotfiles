@@ -1,5 +1,11 @@
 #!/bin/bash
 
-git branch --merged | grep -v -E -- 'mainline|master|main' | xargs git branch -d
+DEFAULT_BRANCH=`git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'`
+CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 
-git branch -r --merged | awk -F'/' '/^ *origin/{if(!match($0, /(>|mainline|master|main)/)){print $2}}' | xargs git push origin --delete
+[[ "$DEFAULT_BRANCH" == "$CURRENT_BRANCH" ]] || { echo >&2 "Currently on $CURRENT_BRANCH, first git checkout $DEFAULT_BRANCH."; exit 1; }
+
+git branch -r --merged | awk -F'/' "/^ *origin/{if(!match(\$0, /(>|$DEFAULT_BRANCH)/)){print \$2}}" | xargs git push origin --delete
+
+# https://medium.com/opendoor-labs/cleaning-up-branches-with-githubs-squash-merge-43138cc7585e
+comm -12 <(git branch | sed "s/ *//g" | sort) <(git remote prune origin | sed "s/^.*origin\///g" | sort) | xargs -L1 -J % git branch -D %
