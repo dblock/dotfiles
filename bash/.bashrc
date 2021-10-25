@@ -15,4 +15,4 @@ export CLICOLOR=1
 export LSCOLORS=ExFxCxDxBxegedabagacad
 export GPG_TTY=$(tty)
 
-ssh-add -K
+ssh-add
