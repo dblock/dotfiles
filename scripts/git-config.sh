@@ -4,6 +4,7 @@ set -e
 
 git config --global user.name "Daniel (dB.) Doubrovkine"
 git config --global user.email "dblock@dblock.org"
+git config --global user.login "dblock"
 git config --global push.default simple
 
 # https://hackernoon.com/lesser-known-git-commands-151a1918a60#.qm8moxzcy

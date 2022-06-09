@@ -3,7 +3,9 @@
 [[ -z "$1" ]] && { echo "syntax: github-clone [url] ([your github username])"; echo "written by https://twitter.com/dblockdotorg" ; exit 1; }
 
 # the github username
-name="${2:-$(git config user.name)}"
+name="${2:-$(git config user.login)}"
+[[ -z "$name" ]] && name="${2:-$(git config user.name)}"
+[[ -z "$name" ]] && name="$(whoami)"
 
 # parse the GIT url
 # http://stackoverflow.com/questions/6174220/parse-url-in-shell-script
