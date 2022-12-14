@@ -9,3 +9,6 @@ if [ -f '/Applications/google-cloud-sdk/path.bash.inc' ]; then source '/Applicat
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Applications/google-cloud-sdk/completion.bash.inc' ]; then source '/Applications/google-cloud-sdk/completion.bash.inc'; fi
+
+# Set PATH, MANPATH, etc., for Homebrew.
+if [ -f '/opt/homebrew/bin/brew' ]; then eval "$(/opt/homebrew/bin/brew shellenv)"; fi
