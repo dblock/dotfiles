@@ -1,5 +1,0 @@
-#!/bin/bash
-
-ssh-add -l | grep -q digitalocean || ssh-add ~/.ssh/digitalocean_rsa
-
-ssh root@dblock-plum.digitalocean.playplay.io
