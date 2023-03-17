@@ -21,12 +21,7 @@ fi
 
 AUTHENTICATED_URI="mongodb+srv://$AUTH@$URI"
 
-mongosh "$AUTHENTICATED_URI" --quiet --eval 'db.getMongo().setReadPref("secondary");db.getMongo().getDBNames()' | sed 's/"//g' | sed "s/'//g" | sed 's/,//g' | awk '{$1=$1};1' | while IFS= read -r DB; do
-    if [[ ${DB} == *"exception"* ]]; then 
-        echo ERROR $DB 
-    break 
-    fi
-    if [ "${DB}" == "[" ] || [ "${DB}" == "]" ]; then continue; fi
+mongosh "$AUTHENTICATED_URI" --quiet --eval 'db.getMongo().setReadPref("secondary");db.getMongo().getDBNames().forEach(function(dbname){print(dbname)})' | while IFS= read -r DB; do
     if [ "${DB}" == "admin" ] || [ "${DB}" == "config" ] || [ "${DB}" == "local" ]; then continue; fi
 
     FP=$(date +"%Y")/$DB
