@@ -1,0 +1,14 @@
+#!/bin/bash
+
+[[ -z "$1" ]] && { echo "syntax: git-back [date]"; exit 1; }
+
+DATE=$1
+REV=`git rev-list -1 --before="$DATE" main`
+
+if [ "$REV" == "" ]; then
+ echo "The repo doesn't go that far back, checking out initial revision."
+ REV=`git rev-list --max-parents=0 HEAD`
+fi
+
+echo "Checking out $REV ..."
+git checkout $REV
