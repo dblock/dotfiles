@@ -8,6 +8,7 @@ unset HISTFILE
 [[ -s "$HOME/.local/bin" ]] && PATH=$PATH:$HOME/.local/bin # Added by pipx
 [[ -s "$HOME/.rvm/bin" ]] && PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 [[ -s "$HOME/.bin" ]] && PATH=$PATH:$HOME/.bin
+[[ -s "$HOME/go/bin" ]] && PATH=$PATH:$HOME/go/bin
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 [[ -s "$HOME/.nvm/nvm.sh" ]] && source "$HOME/.nvm/nvm.sh"
