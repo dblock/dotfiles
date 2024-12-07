@@ -1,0 +1,3 @@
+# https://unix.stackexchange.com/a/73523
+"\e[A": history-search-backward
+"\e[B": history-search-forward

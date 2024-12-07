@@ -9,6 +9,7 @@ echo "Setting up from $DOTFILES_DIR ..."
 [[ ! -s "$HOME/.git-completion.sh" ]] && ln -s "$DOTFILES_DIR/bash/.git-completion.sh" "$HOME/.git-completion.sh"
 [[ ! -s "$HOME/.bin" ]] && ln -s "$DOTFILES_DIR/bash/bin" "$HOME/.bin"
 [[ ! -s "$HOME/.jsbeautifyrc" ]] && ln -s "$DOTFILES_DIR/bash/.jsbeautifyrc" "$HOME/.jsbeautifyrc"
+[[ ! -s "$HOME/.inputrc" ]] && ln -s "$DOTFILES_DIR/bash/.inputrc" "$HOME/.inputrc"
 
 if ! grep -q "$DOTFILES_DIR/bash/.bashrc" "$HOME/.bashrc"; then
   echo "Appending to $HOME/.bashrc ..."
