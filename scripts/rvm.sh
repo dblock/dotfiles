@@ -6,6 +6,8 @@ curl -sSL https://get.rvm.io | bash -s stable --ruby
 
 rvm autolibs enable
 
-rvm install 2.3.1
+rvm install 3.4.1
 
-rvm use 2.3.1 --default
+rvm use 3.4.1 --default
+
+rvm rvmrc warning ignore allGemfiles
