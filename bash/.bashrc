@@ -28,4 +28,7 @@ export LSCOLORS=ExFxCxDxBxegedabagacad
 export GPG_TTY=$(tty)
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
+# disable bracketed paste
+printf "\e[?2004l"
+
 # ssh-add
