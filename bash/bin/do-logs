@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# https://stackoverflow.com/questions/7171725/open-new-terminal-tab-from-command-line-mac-os-x
+if [ "$(which ttab)" == "" ] ; then
+  echo "do-logs: installing ttab"
+  brew tap mklement0/ttab https://github.com/mklement0/ttab.git
+  brew install mklement0/ttab/ttab
+fi
+
+for a in $(doctl apps list --format Spec.Name --no-header); do
+  ttab doctl apps logs $a -f
+done
