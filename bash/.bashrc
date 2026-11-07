@@ -19,6 +19,7 @@ unset HISTFILE
 [[ -f '/Applications/google-cloud-sdk/path.bash.inc' ]] && source '/Applications/google-cloud-sdk/path.bash.inc'
 [[ -f '/Applications/google-cloud-sdk/completion.bash.inc' ]] && source '/Applications/google-cloud-sdk/completion.bash.inc'
 [[ -f '/opt/homebrew/bin/brew' ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+[[ -x '/opt/homebrew/opt/rustup/bin/cargo' ]] && export PATH="/opt/homebrew/opt/rustup/bin:$HOME/.cargo/bin:$PATH"
 [[ -f '/opt/homebrew/bin/pyenv' ]] && eval "$(/opt/homebrew/bin/pyenv init - bash)"
 
 PS1="\[\033[01;172m\]\w\[\033[00m\]\$(__git_ps1)\$ "
