@@ -60,9 +60,11 @@ Immediately after pushing the authorized bootstrap and setting the default branc
 
 Configure repository merge options with `allow_squash_merge=true`, `allow_rebase_merge=true`, and `allow_merge_commit=false`, and enable automatic deletion of merged PR branches with `delete_branch_on_merge=true`; read them back to verify. Request a single coherent commit for most PRs, but allow multiple commits when they represent useful, independently reviewable changes.
 
+Add a small set of relevant GitHub repository topics reflecting the language, ecosystem, integration, and purpose, for example `ruby`, `rubygem`, and `rubocop`, or `javascript`, `eslint-plugin`, and `spellcheck` where applicable. Use lowercase hyphenated topic names, preserve existing topics, and avoid unrelated keywords. Apply with `gh repo edit --add-topic` and read back the repository topics to verify.
+
 Before every development push, including updates to an existing PR, run the project's local test and lint commands covering the pushed revision. Run final checks before committing and reuse their results for the push if the tested content and configuration have not changed; otherwise rerun affected checks. Fix failures before pushing, and report any check that cannot run rather than pushing unverified changes. The README-only bootstrap has no project checks yet; validate the scaffold before pushing its branch. Record these pre-push expectations in AGENTS and CONTRIBUTING.
 
-For every PR, disclose AI authorship on behalf of `@dblock`, summarize scope and validation, and link related issues without closing them manually. Verify the remote branch, PR, and available CI results; report pending checks honestly.
+For every PR, disclose AI authorship on behalf of `@dblock`, summarize scope and validation, and link related issues without closing them manually. Verify the remote branch, PR, and available CI results; report pending checks honestly. When local tests and lint passed for the exact pushed revision, do not wait idle for GitHub CI before continuing or handing off. Report checks still running and check their results later during the next relevant task or when the user asks.
 
 Use a separate `<username>/<topic>` branch for each subsequent PR, creating a worktree only for parallel tasks, and prefer one logical commit unless multiple commits aid review. If its prerequisite PR is still unmerged, branch from that PR and target it with a stacked PR, stating the dependency; retarget to `master` after the base merges. Remove only worktrees you created when no longer needed and clean; never force removal of dirty worktrees. Do not merge, publish packages, create release tags/releases, or set registry credentials unless explicitly requested. Never overwrite existing repository work, published versions, or release tags.
 
@@ -90,6 +92,10 @@ CHANGELOG starts with `# Changelog`, then `## <version> (Next)` and `- Your cont
 
 RELEASING describes version synchronization, validation, authentication, exact-artifact publication, and registry/tag verification; it does not authorize publishing.
 
+For breaking changes to previously released behavior, create or update UPGRADING.md in the same PR and link it from README's Contributing section. Use target-release headings such as `## Upgrading to 0.4.0`, identify the affected source release, and keep each migration short with clear before/after API, configuration, or CLI examples and required steps. Link to the PR that introduced the change for details rather than repeating its full explanation. Describe net changes from released behavior, not unreleased implementation iterations. Include this requirement in AGENTS and CONTRIBUTING, including for breaking changes in `0.x`.
+
+After the first release is confirmed in the registry, add a package-version badge to the README's existing badge block: RubyGems for Ruby gems or npm for JavaScript packages, linking to the actual published package page. Use the registry package name, including any scope, rather than assuming it matches the repository name; verify the badge and link resolve. Do not add a registry badge before publication or confuse it with the scaffold's package-validation workflow badge. Include this post-release step in RELEASING.
+
 Regularly simplify DESIGN to the current agreed design and relevant rationale. Remove superseded proposals, implementation diaries, and decision history unless they explain a still-relevant constraint; rely on Git history for obsolete details. Include this maintenance rule in AGENTS.
 
 For JavaScript packages, plan a manual first npm release at `0.1.0`, then configure npm Trusted Publishing for subsequent releases after the package exists. Document this sequence in RELEASING and AGENTS: validate and inspect the actual npm tarball, publish that artifact manually with explicitly authorized interactive authentication, and verify the registry version and matching release tag. Only afterward configure the package's trusted publisher and a GitHub Actions release workflow using OIDC, following current npm requirements; do not store long-lived npm tokens in repository secrets. Publication, tags/releases, authentication, and trusted-publisher setup each require explicit user authorization; writing these instructions does not perform or authorize a release.
@@ -116,6 +122,8 @@ Use separate GitHub Actions workflow files: `test.yml` named `Test` for tests an
 ## 7. Validate and open the implementation PR
 
 Once implementation is ready, run final tests, lint, and package validation before committing. Fix failures and rerun affected checks; avoid repeated intermediate full runs.
+
+For Ruby lint failures, first run `bundle exec rubocop -a` and review safe autocorrections. Fix remaining offenses where practical; when they cannot reasonably be fixed, prefer `bundle exec rubocop --auto-gen-config` and reviewed generated configuration over hand-written blanket cop disables. Preserve existing configuration, commit the generated config and its inheritance, and verify RuboCop passes. Include this remediation workflow in AGENTS and CONTRIBUTING.
 
 Build the gem with `bundle exec rake build` or create an npm tarball with `npm pack`. Inspect the archive's contents and install that actual artifact in an owned temporary consumer; verify public API/CLI behavior, not only source-tree tests. Validate workspace packages individually when applicable. Clean up only artifacts you created. Example: [exact-archive validation and release procedure](https://github.com/dblock/eslint-plugin-portable-paths/pull/9).
 
