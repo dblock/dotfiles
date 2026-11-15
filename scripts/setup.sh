@@ -11,6 +11,10 @@ echo "Setting up from $DOTFILES_DIR ..."
 [[ ! -s "$HOME/.jsbeautifyrc" ]] && ln -s "$DOTFILES_DIR/bash/.jsbeautifyrc" "$HOME/.jsbeautifyrc"
 [[ ! -s "$HOME/.inputrc" ]] && ln -s "$DOTFILES_DIR/bash/.inputrc" "$HOME/.inputrc"
 
+mkdir -p "$HOME/.copilot"
+instructions_link="$HOME/.copilot/copilot-instructions.md"
+[[ -e "$instructions_link" || -L "$instructions_link" ]] || ln -s "$DOTFILES_DIR/.copilot/copilot-instructions.md" "$instructions_link"
+
 for skill_dir in "$DOTFILES_DIR"/.copilot/skills/*; do
   [[ -f "$skill_dir/SKILL.md" ]] || continue
   mkdir -p "$HOME/.copilot/skills"
