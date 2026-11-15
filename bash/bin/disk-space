@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ "$#" -eq 0 ]; then
+  df -g .
+else
+  if [ "$#" -eq 1 ] && [ "$1" = "." ]; then
+    set -- *
+  fi
+  du -sh -- "$@" 2>/dev/null | sort -hr | head -n 20
+fi
