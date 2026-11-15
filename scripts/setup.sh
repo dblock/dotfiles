@@ -18,6 +18,15 @@ for skill_dir in "$DOTFILES_DIR"/.copilot/skills/*; do
   [[ -e "$skill_link" || -L "$skill_link" ]] || ln -s "$skill_dir" "$skill_link"
 done
 
+if [[ "$(uname)" == "Darwin" ]]; then
+  mkdir -p "$HOME/Library/LaunchAgents"
+  for agent in "$DOTFILES_DIR"/scripts/osx/LaunchAgents/*.plist; do
+    [[ -f "$agent" ]] || continue
+    agent_link="$HOME/Library/LaunchAgents/$(basename "$agent")"
+    [[ -e "$agent_link" || -L "$agent_link" ]] || ln -s "$agent" "$agent_link"
+  done
+fi
+
 if ! grep -q "$DOTFILES_DIR/bash/.bashrc" "$HOME/.bashrc"; then
   echo "Appending to $HOME/.bashrc ..."
   echo "source \"$DOTFILES_DIR/bash/.bashrc\"" >> "$HOME/.bashrc"
