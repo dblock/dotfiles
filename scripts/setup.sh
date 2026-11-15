@@ -11,6 +11,13 @@ echo "Setting up from $DOTFILES_DIR ..."
 [[ ! -s "$HOME/.jsbeautifyrc" ]] && ln -s "$DOTFILES_DIR/bash/.jsbeautifyrc" "$HOME/.jsbeautifyrc"
 [[ ! -s "$HOME/.inputrc" ]] && ln -s "$DOTFILES_DIR/bash/.inputrc" "$HOME/.inputrc"
 
+for skill_dir in "$DOTFILES_DIR"/.copilot/skills/*; do
+  [[ -f "$skill_dir/SKILL.md" ]] || continue
+  mkdir -p "$HOME/.copilot/skills"
+  skill_link="$HOME/.copilot/skills/$(basename "$skill_dir")"
+  [[ -e "$skill_link" || -L "$skill_link" ]] || ln -s "$skill_dir" "$skill_link"
+done
+
 if ! grep -q "$DOTFILES_DIR/bash/.bashrc" "$HOME/.bashrc"; then
   echo "Appending to $HOME/.bashrc ..."
   echo "source \"$DOTFILES_DIR/bash/.bashrc\"" >> "$HOME/.bashrc"

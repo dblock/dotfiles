@@ -21,3 +21,4 @@
 
 See [scripts/setup.sh](scripts/setup.sh), YMMV.
 
+See [Copilot skills](.copilot/skills/README.md) for reusable project workflows.
