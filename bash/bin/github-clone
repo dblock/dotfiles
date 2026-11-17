@@ -53,8 +53,8 @@ echo "github-clone: cloning $org/$repo into $repo/$org and $repo/$name"
 
 mkdir -p $repo
 pushd $repo
-git clone $upstream upstream-$repo
-git clone $fork $name-$repo
+git clone --single-branch $upstream upstream-$repo
+git clone --single-branch $fork $name-$repo
 cd $name-$repo
 git remote add upstream $upstream
 cd ..
