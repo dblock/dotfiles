@@ -13,9 +13,13 @@ Prepare and validate the scaffold locally, then create the GitHub repository and
 
 Pause for user review and explicit approval after agreeing scope and design, after opening the scaffold PR, and after opening the implementation PR. Present the outcome and wait rather than automatically continuing. Incorporate requested adjustments into the current PR, validate, amend, and push without asking permission to update it; then wait for approval to proceed to the next phase. Resume from the current phase when the user says to continue. Also obtain approval of the logo concept before creating artwork. Local-only or other explicit user limits override these gates and PR steps.
 
-## 1. Define and agree
+## 1. Define and Agree
 
-Ask for purpose, intended behavior, ecosystem, and project name. Default GitHub owner to `dblock` and use the shared main-checkout and sibling-worktree layout. Agree on a small first version and a brief design before implementing: public API/CLI, dependencies, host integration, and package/workspace layout.
+First ask for purpose, intended behavior, ecosystem, and project name, and explicitly agree with the user on the initial scope and non-goals before proceeding. Default GitHub owner to `dblock` and use the shared main-checkout and sibling-worktree layout.
+
+Before creating a new project, search GitHub and the relevant package registry for very similar projects or libraries within the agreed scope. Compare the closest alternatives with links, covering overlapping functionality, meaningful differences or missing capabilities, maintenance, adoption, license, and runtime/host compatibility. Recommend whether to adopt or extend an existing project or create something new, with a concrete reason for any new project rather than assuming one is needed. Report search or access limitations instead of claiming no alternatives exist.
+
+Present the comparison and recommendation, then obtain explicit agreement on whether to proceed with a new project and its final small first-version scope and non-goals. Agree on a brief design before scaffolding or implementing: public API/CLI, dependencies, host integration, and package/workspace layout.
 
 Check repository and registry name availability early. Distinguish repository, registry package, scope, command, and plugin names; ask before changing the name or choosing a scope. An npm `E404` can indicate an unpublished name, but authentication/network errors cannot establish availability, and lookup cannot guarantee registry acceptance. Example: [scoped npm naming without changing the repository or command](https://github.com/dblock/oxlint-plugin-spellcheck/pull/15).
 
