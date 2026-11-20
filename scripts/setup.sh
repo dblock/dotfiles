@@ -22,6 +22,17 @@ for skill_dir in "$DOTFILES_DIR"/.copilot/skills/*; do
   [[ -e "$skill_link" || -L "$skill_link" ]] || ln -s "$skill_dir" "$skill_link"
 done
 
+mkdir -p "$HOME/.claude"
+claude_link="$HOME/.claude/CLAUDE.md"
+[[ -e "$claude_link" || -L "$claude_link" ]] || ln -s "$DOTFILES_DIR/.claude/CLAUDE.md" "$claude_link"
+
+for skill_dir in "$DOTFILES_DIR"/.claude/skills/*; do
+  [[ -f "$skill_dir/SKILL.md" ]] || continue
+  mkdir -p "$HOME/.claude/skills"
+  skill_link="$HOME/.claude/skills/$(basename "$skill_dir")"
+  [[ -e "$skill_link" || -L "$skill_link" ]] || ln -s "$skill_dir" "$skill_link"
+done
+
 if [[ "$(uname)" == "Darwin" ]]; then
   mkdir -p "$HOME/Library/LaunchAgents"
   for agent in "$DOTFILES_DIR"/scripts/osx/LaunchAgents/*.plist; do
