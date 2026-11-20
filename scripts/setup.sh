@@ -25,6 +25,8 @@ done
 mkdir -p "$HOME/.claude"
 claude_link="$HOME/.claude/CLAUDE.md"
 [[ -e "$claude_link" || -L "$claude_link" ]] || ln -s "$DOTFILES_DIR/.claude/CLAUDE.md" "$claude_link"
+claude_settings_link="$HOME/.claude/settings.json"
+[[ -e "$claude_settings_link" || -L "$claude_settings_link" ]] || ln -s "$DOTFILES_DIR/.claude/settings.json" "$claude_settings_link"
 
 for skill_dir in "$DOTFILES_DIR"/.claude/skills/*; do
   [[ -f "$skill_dir/SKILL.md" ]] || continue

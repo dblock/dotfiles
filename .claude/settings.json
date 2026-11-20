@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.google.com)",
+      "Bash(cat:*)",
+      "Bash(bundle install:*)",
+      "Bash(curl:*)",
+      "Bash(ruby:*)",
+      "Bash(gcloud auth:*)",
+      "Bash(gcloud:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(gh search:*)",
+      "Bash(gh pr:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ],
+    "deny": [],
+    "defaultMode": "bypassPermissions"
+  },
+  "spinnerTipsEnabled": false,
+  "alwaysThinkingEnabled": true,
+  "prefersReducedMotion": true,
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark",
+  "editorMode": "normal",
+  "autoContinueAtUsageLimit": false,
+  "remoteControlAtStartup": true
+}
