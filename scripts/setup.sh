@@ -11,28 +11,31 @@ echo "Setting up from $DOTFILES_DIR ..."
 [[ ! -s "$HOME/.jsbeautifyrc" ]] && ln -s "$DOTFILES_DIR/bash/.jsbeautifyrc" "$HOME/.jsbeautifyrc"
 [[ ! -s "$HOME/.inputrc" ]] && ln -s "$DOTFILES_DIR/bash/.inputrc" "$HOME/.inputrc"
 
-mkdir -p "$HOME/.copilot"
-instructions_link="$HOME/.copilot/copilot-instructions.md"
-[[ -e "$instructions_link" || -L "$instructions_link" ]] || ln -s "$DOTFILES_DIR/.copilot/copilot-instructions.md" "$instructions_link"
+# Link $2 to $1. Re-point links that already point into this repository (so moved files are
+# picked up); leave any other existing file or link alone.
+link_agent_file() {
+  local target="$1" link="$2"
+  mkdir -p "$(dirname "$link")"
+  if [[ -L "$link" && "$(readlink "$link")" == "$DOTFILES_DIR"/* ]]; then
+    ln -sfn "$target" "$link"
+  elif [[ -e "$link" || -L "$link" ]]; then
+    echo "Skipping $link: it exists and does not point into $DOTFILES_DIR."
+  else
+    ln -s "$target" "$link"
+  fi
+}
 
-for skill_dir in "$DOTFILES_DIR"/.copilot/skills/*; do
+# Agent instructions: shared instructions plus per-tool overrides (see agents/README.md).
+link_agent_file "$DOTFILES_DIR/agents/instructions.md" "$HOME/.copilot/copilot-instructions.md"
+link_agent_file "$DOTFILES_DIR/agents/copilot/copilot.instructions.md" "$HOME/.copilot/instructions/copilot.instructions.md"
+link_agent_file "$DOTFILES_DIR/agents/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+link_agent_file "$DOTFILES_DIR/agents/claude/settings.json" "$HOME/.claude/settings.json"
+
+# Shared skills, linked into both tools.
+for skill_dir in "$DOTFILES_DIR"/agents/skills/*; do
   [[ -f "$skill_dir/SKILL.md" ]] || continue
-  mkdir -p "$HOME/.copilot/skills"
-  skill_link="$HOME/.copilot/skills/$(basename "$skill_dir")"
-  [[ -e "$skill_link" || -L "$skill_link" ]] || ln -s "$skill_dir" "$skill_link"
-done
-
-mkdir -p "$HOME/.claude"
-claude_link="$HOME/.claude/CLAUDE.md"
-[[ -e "$claude_link" || -L "$claude_link" ]] || ln -s "$DOTFILES_DIR/.claude/CLAUDE.md" "$claude_link"
-claude_settings_link="$HOME/.claude/settings.json"
-[[ -e "$claude_settings_link" || -L "$claude_settings_link" ]] || ln -s "$DOTFILES_DIR/.claude/settings.json" "$claude_settings_link"
-
-for skill_dir in "$DOTFILES_DIR"/.claude/skills/*; do
-  [[ -f "$skill_dir/SKILL.md" ]] || continue
-  mkdir -p "$HOME/.claude/skills"
-  skill_link="$HOME/.claude/skills/$(basename "$skill_dir")"
-  [[ -e "$skill_link" || -L "$skill_link" ]] || ln -s "$skill_dir" "$skill_link"
+  link_agent_file "$skill_dir" "$HOME/.copilot/skills/$(basename "$skill_dir")"
+  link_agent_file "$skill_dir" "$HOME/.claude/skills/$(basename "$skill_dir")"
 done
 
 if [[ "$(uname)" == "Darwin" ]]; then
