@@ -10,7 +10,7 @@ Work on topic branches in the existing checkout by default. Name branches `<user
 
 Inspect status, branches, and existing worktrees before switching. Preserve unrelated changes and never switch, overwrite, rebase, or force-push a checkout or branch used by another task. Resolve ownership conflicts with the user rather than discarding work or creating an unnecessary worktree.
 
-Exception: work on `~/source/dotfiles` directly in that checkout on `master`, even when its working tree has unrelated uncommitted changes, because it is symlinked into the live configuration. Do not create topic branches, worktrees, or PRs there; commit only the task's own files, leaving unrelated changes unstaged, and push to `origin/master` as a fast-forward.
+Exception: work on `~/source/dotfiles` directly in that checkout on `master`, even when its working tree has unrelated uncommitted changes, because it is symlinked into the live configuration. Do not create topic branches, worktrees, or PRs there; show the user the diff and wait for their approval before committing, commit only the task's own files, leaving unrelated changes unstaged, and push to `origin/master` as a fast-forward.
 
 ## Pull Requests
 
