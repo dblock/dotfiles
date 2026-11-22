@@ -25,8 +25,9 @@
   "alwaysThinkingEnabled": true,
   "prefersReducedMotion": true,
   "skipDangerousModePermissionPrompt": true,
-  "theme": "dark",
+  "theme": "auto",
   "editorMode": "normal",
   "autoContinueAtUsageLimit": false,
-  "remoteControlAtStartup": true
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true
 }
