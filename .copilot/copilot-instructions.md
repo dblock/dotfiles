@@ -10,6 +10,8 @@ Work on topic branches in the existing checkout by default. Name branches `<user
 
 Inspect status, branches, and existing worktrees before switching. Preserve unrelated changes and never switch, overwrite, rebase, or force-push a checkout or branch used by another task. Resolve ownership conflicts with the user rather than discarding work or creating an unnecessary worktree.
 
+Exception: work on `~/source/dotfiles` directly in that checkout on `master`, even when its working tree has unrelated uncommitted changes, because it is symlinked into the live configuration. Do not create topic branches, worktrees, or PRs there; commit only the task's own files, leaving unrelated changes unstaged, and push to `origin/master` as a fast-forward.
+
 ## Pull Requests
 
 When working on multiple changes or features, split them into small, focused PRs and stack them rather than combining them into one large PR. The bottom PR targets the intended base branch, and each higher PR branches from and targets the PR branch immediately below it. Implement, validate, commit, and push each lower layer before creating the next; each PR should describe and contain only its own layer's changes. Keep a single small independent change in one PR.
