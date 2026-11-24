@@ -1,0 +1,74 @@
+#!/bin/bash
+# Lists or adds a crates.io Trusted Publishing configuration for a GitHub Actions workflow.
+# Reads the API token (scopes publish-new and trusted-publishing) from ~/.config/crates-io/token, or
+# $CRATES_IO_TOKEN_FILE, without printing it.
+
+set -euo pipefail
+
+usage() {
+  echo "syntax: crates-trusted-publisher <crate> [<owner>/<repo> [workflow] [environment]]"
+  echo "Lists the crate's trusted publishers, or adds <owner>/<repo>'s workflow (default release.yml) and environment (default release)."
+}
+
+[[ $# -lt 1 || $# -gt 4 || "$1" == "-h" || "$1" == "--help" ]] && { usage; exit 1; }
+
+crate="$1"
+repository="${2:-}"
+workflow="${3:-release.yml}"
+environment="${4:-release}"
+token_file="${CRATES_IO_TOKEN_FILE:-$HOME/.config/crates-io/token}"
+api="https://crates.io/api/v1/trusted_publishing/github_configs"
+
+[[ -s "$token_file" ]] || {
+  echo "No crates.io token in $token_file. Create one with the publish-new and trusted-publishing scopes at https://crates.io/settings/tokens/new, then run: pbpaste > $token_file && chmod 600 $token_file" >&2
+  exit 1
+}
+
+if [[ -n "$repository" && ! "$repository" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+  echo "Expected <owner>/<repo>, got $repository." >&2
+  exit 1
+fi
+
+response="$(mktemp)"
+trap 'rm -f "$response"' EXIT
+
+# Sends a request with the token read from its file, saves the body, and prints the HTTP status.
+request() {
+  curl -sS -o "$response" -w "%{http_code}" -A "crates-trusted-publisher" \
+    -H "Authorization: $(tr -d '\n' < "$token_file")" -H "Content-Type: application/json" "$@"
+}
+
+# Prints the response's error details and exits.
+fail() {
+  ruby -rjson -e 'j = (JSON.parse(File.read(ARGV[0])) rescue nil); puts(j && j["errors"] ? j["errors"].map { |e| e["detail"] }.join("; ") : File.read(ARGV[0]))' "$response" >&2
+  exit 1
+}
+
+# Prints each configuration as owner/repo, workflow, and environment.
+list() {
+  status="$(request "$api?crate=$crate")"
+  [[ "$status" == 200 ]] || { echo "Listing trusted publishers for $crate failed with HTTP $status." >&2; fail; }
+  ruby -rjson -e 'configs = JSON.parse(File.read(ARGV[0]))["github_configs"]
+    puts "#{ARGV[1]} has no trusted publishers." if configs.empty?
+    configs.each { |c| puts "#{ARGV[1]}: #{c["repository_owner"]}/#{c["repository_name"]}, workflow #{c["workflow_filename"]}, environment #{c["environment"] || "(any)"}, id #{c["id"]}." }' "$response" "$crate"
+}
+
+if [[ -z "$repository" ]]; then
+  list
+  exit 0
+fi
+
+owner="${repository%%/*}"
+name="${repository#*/}"
+
+list > /dev/null
+if ruby -rjson -e 'exit(JSON.parse(File.read(ARGV[0]))["github_configs"].any? { |c| [c["repository_owner"], c["repository_name"], c["workflow_filename"], c["environment"]] == ARGV[1, 4] } ? 0 : 1)' "$response" "$owner" "$name" "$workflow" "$environment"; then
+  echo "$crate already trusts $repository, workflow $workflow, environment $environment."
+  exit 0
+fi
+
+body="$(ruby -rjson -e 'puts({ github_config: { crate: ARGV[0], repository_owner: ARGV[1], repository_name: ARGV[2], workflow_filename: ARGV[3], environment: ARGV[4] } }.to_json)' "$crate" "$owner" "$name" "$workflow" "$environment")"
+status="$(request -X POST --data "$body" "$api")"
+[[ "$status" == 200 || "$status" == 201 ]] || { echo "Adding the trusted publisher for $crate failed with HTTP $status." >&2; fail; }
+echo "Added $repository, workflow $workflow, environment $environment, as a trusted publisher of $crate."
+list
