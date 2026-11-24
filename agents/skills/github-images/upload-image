@@ -1,0 +1,53 @@
+#!/bin/bash
+# Upload images or videos as GitHub user attachments and print Markdown for each.
+#
+# Usage: upload-image [-R owner/repo] FILE...
+#
+# Uses GitHub's undocumented user-attachments upload endpoint, authenticated with the gh CLI token.
+# Prints one Markdown line per file, `![name](https://github.com/user-attachments/assets/<uuid>)`.
+# Attachments stay private until a PR, issue, or comment in the repository references them.
+set -euo pipefail
+
+repo=""
+if [ "${1:-}" = "-R" ]; then
+  repo="${2:?missing owner/repo after -R}"
+  shift 2
+fi
+if [ "$#" -eq 0 ]; then
+  echo "usage: upload-image [-R owner/repo] FILE..." >&2
+  exit 2
+fi
+if [ -z "$repo" ]; then
+  repo=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
+fi
+
+repository_id=$(gh api "repos/$repo" --jq .id)
+token=$(gh auth token --hostname github.com)
+
+content_type() {
+  case "$(echo "${1##*.}" | tr '[:upper:]' '[:lower:]')" in
+    png) echo image/png ;;
+    jpg | jpeg) echo image/jpeg ;;
+    gif) echo image/gif ;;
+    webp) echo image/webp ;;
+    svg) echo image/svg+xml ;;
+    mp4) echo video/mp4 ;;
+    mov) echo video/quicktime ;;
+    webm) echo video/webm ;;
+    *) echo "unsupported file type: $1" >&2; return 1 ;;
+  esac
+}
+
+for file in "$@"; do
+  if [ ! -f "$file" ]; then
+    echo "not a file: $file" >&2
+    exit 1
+  fi
+  name=$(basename "$file")
+  type=$(content_type "$file")
+  url=$(curl --fail-with-body -sS -X POST 'https://uploads.github.com/user-attachments/assets' \
+    --url-query "name=$name" --url-query "content_type=$type" --url-query "repository_id=$repository_id" \
+    -H 'Content-Type: application/octet-stream' -H 'X-GitHub-Api-Version: 2022-11-28' \
+    -H "Authorization: Bearer $token" --data-binary "@$file" | jq -er .url)
+  echo "![${name%.*}]($url)"
+done

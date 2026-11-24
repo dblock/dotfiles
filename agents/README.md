@@ -17,6 +17,7 @@ Keep `instructions.md` tool-neutral and put tool-specific behavior, such as co-a
 | Skill | Purpose |
 |---|---|
 | [create-project](skills/create-project/SKILL.md) | Create a Ruby gem or JavaScript package through implementation, validation, and a GitHub PR. |
+| [github-images](skills/github-images/SKILL.md) | Upload screenshots and other images to GitHub from the terminal and embed them in PR and issue descriptions and comments. |
 | [update-dependencies](skills/update-dependencies/SKILL.md) | Sweep DigitalOcean-deployed projects (or one named project) from an up-to-date default branch, open a PR per project with minor and patch dependency updates and major development and test gem updates, stack feasible major upgrades on top, and suggest the rest. |
 
 To add a skill, create `skills/<name>/SKILL.md` and run [scripts/setup.sh](../scripts/setup.sh). Run `/skills reload` in Copilot CLI to load it; Claude Code picks it up in new sessions.
