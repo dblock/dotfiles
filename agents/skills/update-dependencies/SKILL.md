@@ -20,7 +20,7 @@ Never hard-code the project list: it includes private repositories. Discover it 
 
 ## Locate Checkouts
 
-Checkouts do not follow one layout; they may live at `~/source/<repo>`, `~/source/<group>/<repo>`, or `~/source/<repo>/master`. Find each repository by its remote rather than its directory name: search `~/source` up to three levels deep for Git checkouts (`.git` directory or file) whose `origin` URL matches `github.com[:/]<owner>/<repo>(.git)?`. Prefer the main checkout over linked worktrees.
+Find each repository's local checkout by its remotes, as described under Repository Layout and Worktrees in [instructions.md](../../instructions.md). When the only match is a fork checkout, push the branch to the fork and open the PR against the upstream repository.
 
 If a repository has no local checkout, list it and ask once, for all missing repositories together, whether to clone them to `~/source/<repo>/<branch>`, using the deployed branch name; skip them otherwise.
 
