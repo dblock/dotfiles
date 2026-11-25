@@ -1,6 +1,6 @@
 #!/bin/bash
 # Sets up scheduled jobs on a new or rebuilt Mac: installs the tools they need, links and loads every LaunchAgent in
-# LaunchAgents/, and schedules a weekly wake so the Saturday jobs run. Safe to rerun; asks for sudo for pmset.
+# LaunchAgents/, and schedules a daily wake so the jobs run while the Mac would otherwise sleep. Safe to rerun; asks for sudo for pmset.
 
 set -euo pipefail
 
@@ -8,10 +8,11 @@ dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 agents_dir="$HOME/Library/LaunchAgents"
 domain="gui/$(id -u)"
 
-# Wake (or power on) Saturdays shortly before com.dblock.update-dependencies runs at 3:00. macOS keeps
-# only one repeating wake schedule, so this replaces any other `pmset repeat` setting.
-wake_days="S"
-wake_time="02:55:00"
+# Wake (or power on) daily shortly before com.dblock.mongodb-backup runs at 5:00. launchd runs jobs missed while the
+# Mac slept on wake, so this also starts the Saturday 3:00 com.dblock.update-dependencies sweep when the Mac slept
+# through it. macOS keeps only one repeating wake schedule, so this replaces any other `pmset repeat` setting.
+wake_days="MTWRFSU"
+wake_time="04:55:00"
 
 # Tools the scheduled jobs need, from Homebrew.
 for formula in jq doctl mongosh mongodb-database-tools; do
