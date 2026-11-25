@@ -18,7 +18,7 @@ Keep `instructions.md` tool-neutral and put tool-specific behavior, such as co-a
 |---|---|
 | [create-project](skills/create-project/SKILL.md) | Create a Ruby gem or JavaScript package through implementation, validation, and a GitHub PR. |
 | [github-images](skills/github-images/SKILL.md) | Upload screenshots and other images to GitHub from the terminal and embed them in PR and issue descriptions and comments. |
-| [modernize-project](skills/modernize-project/SKILL.md) | Find stale maintained projects and modernize them in parallel as stacked PRs: GitHub Actions CI on current Rubies, documentation linting, faster CI, current Danger, and dependency updates through update-dependencies. |
+| [modernize-project](skills/modernize-project/SKILL.md) | Find stale maintained Ruby and JavaScript projects and modernize them in parallel as stacked PRs: GitHub Actions CI on current runtimes, documentation linting, faster CI, current Danger, and dependency updates through update-dependencies, with ecosystem guides in [ruby.md](skills/modernize-project/ruby.md) and [javascript.md](skills/modernize-project/javascript.md). |
 | [update-dependencies](skills/update-dependencies/SKILL.md) | Sweep DigitalOcean-deployed projects (or one named project) from an up-to-date default branch, open a PR per project with minor and patch dependency updates and major development and test gem updates, stack feasible major upgrades on top, and suggest the rest. |
 
 To add a skill, create `skills/<name>/SKILL.md` and run [scripts/setup.sh](../scripts/setup.sh). Run `/skills reload` in Copilot CLI to load it; Claude Code picks it up in new sessions.
