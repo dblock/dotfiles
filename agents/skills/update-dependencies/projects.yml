@@ -1,0 +1,12 @@
+# Project lists for the update-dependencies skill, linked as ~/.config/update-dependencies/projects.yml by scripts/setup.sh.
+#
+# Entries are `owner/repo` or `owner/*`. This file is public: list only public repositories and owners here, and put
+# private ones in ~/.config/update-dependencies/projects.local.yml, which uses the same keys and is not in any repository.
+
+# Repositories to sweep even when discovery would skip them, such as forks that are maintained as projects of their own.
+include:
+  - dblock/create-a-github-issue
+
+# Repositories and owners never to sweep, even when they are active and writable.
+exclude:
+  - opensearch-project/*

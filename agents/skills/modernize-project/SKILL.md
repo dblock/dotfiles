@@ -81,8 +81,8 @@ Always finish the stack by updating dependencies, after the layers above are pus
 - Branch `dblock/update-dependencies` from the top modernization layer rather than the default branch, open its PR against that layer, and stack its major-upgrade PRs above it, all in the same native stack. If no modernization layer was needed, start from the default branch as that skill describes.
 - Skip DigitalOcean discovery and Verify Deployments unless the repository is deployed on App Platform; use the GitHub default branch where that skill says deployed branch.
 - Development and test dependencies that the CI and docs lint layers already moved to current majors need no second update; update everything else, including GitHub Actions and service versions in CI.
-- That skill is written for Bundler; apply its rules with the ecosystem's tools as the guide describes.
-- Keep that skill's rules on superseded bot PRs (`Supersedes #<number>`), held-back updates, abandoned majors, and suggestions, and its rule of no changelog entries for dependency upgrades.
+- Use that skill's ecosystem guide alongside this skill's guide for the repository.
+- Keep that skill's rules on superseded bot PRs (`Supersedes #<number>`), held-back updates, abandoned majors, and suggestions, and add no changelog entries for dependency upgrades.
 - Report security advisory counts before and after (`npm audit`, `bundle audit` where installed), and why any remaining advisory was left.
 
 Include its results in the report: updates applied, held back, stacked majors, and suggestions.

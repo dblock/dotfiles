@@ -38,6 +38,9 @@ for skill_dir in "$DOTFILES_DIR"/agents/skills/*; do
   link_agent_file "$skill_dir" "$HOME/.claude/skills/$(basename "$skill_dir")"
 done
 
+# Project lists for the update-dependencies skill.
+link_agent_file "$DOTFILES_DIR/agents/skills/update-dependencies/projects.yml" "$HOME/.config/update-dependencies/projects.yml"
+
 if [[ "$(uname)" == "Darwin" ]]; then
   mkdir -p "$HOME/Library/LaunchAgents"
   for agent in "$DOTFILES_DIR"/scripts/osx/LaunchAgents/*.plist; do
