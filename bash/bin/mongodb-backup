@@ -1,0 +1,148 @@
+#!/bin/bash
+# Backs up every database of each MongoDB cluster configured under a backup root, keeping the last 30 daily snapshots
+# and the last snapshot of every month. Run daily by scripts/osx/LaunchAgents/com.dblock.mongodb-backup.plist.
+#
+# Usage: mongodb-backup [backup-root]
+#
+# Backs up every MongoDB cluster in the DigitalOcean account that doctl is authenticated to, discovered on each run
+# so that no connection details are stored anywhere, into a directory named after the cluster under the backup root
+# (default ~/Dropbox/Personal/DigitalOcean/mongo/backup).
+#
+# Credentials are a generic password in the login keychain whose service is the connection string and whose account
+# is $USER, storing `username:password`; the connection string is
+# `<host>/?tls=true&authSource=admin&replicaSet=<cluster name>`. Run mongodb-backup once from a terminal to be asked for them; view them with
+# `security find-generic-password -s "<uri>" -w`, and delete them to be asked again with
+# `security delete-generic-password -s "<uri>"`.
+#
+# Each cluster directory holds:
+#   daily/YYYY-MM-DD/<db>.dump.gz     snapshots from the last 30 days
+#   YYYY/<db>/YYYY-MM-<db>.dump.gz    the last snapshot of each month
+#
+# Restore a database with: mongorestore --uri=<uri> --gzip --archive=<file>
+
+set -euo pipefail
+
+[[ "$OSTYPE" == darwin* ]] || { echo "mongodb-backup requires macOS to store credentials." >&2; exit 1; }
+
+# launchd starts jobs with a minimal PATH, without Homebrew.
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+root="${1:-$HOME/Dropbox/Personal/DigitalOcean/mongo/backup}"
+keep_days=30
+today="$(date +%F)"
+month="$(date +%Y-%m)"
+year="$(date +%Y)"
+cutoff="$(date -v-"${keep_days}"d +%F)"
+
+work="$(mktemp -d)"
+trap 'rm -rf "$work"' EXIT
+failures=""
+
+log() { echo "$(date '+%F %T'): $*"; }
+
+# Shows an alert that stays until dismissed, with a button to open a file, unless running in a terminal, which shows
+# the error already. It gives up after 12 hours, so a scheduled job never waits for its next run.
+alert() {
+  local title="$1" message="$2" file="$3"
+  [[ -t 2 ]] && return 0
+  osascript -e 'on run argv' \
+    -e 'set answer to display alert (item 1 of argv) message (item 2 of argv) as critical buttons {"Dismiss", "Open"} default button "Open" giving up after 43200' \
+    -e 'if button returned of answer is "Open" then do shell script "open " & quoted form of (item 3 of argv)' \
+    -e 'end run' "$title" "$message" "$file" > /dev/null 2>&1 || true
+}
+
+# Prints user:password for a connection string, asking for them and saving them in the Keychain when missing.
+credentials() {
+  local uri="$1" auth username password
+  if auth="$(security find-generic-password -s "$uri" -w 2>/dev/null)"; then
+    echo "$auth"
+    return
+  fi
+  if [[ ! -t 0 ]]; then
+    echo "No Keychain credentials for $uri; run mongodb-backup once from a terminal to add them." >&2
+    return 1
+  fi
+  read -rp 'MongoDB Username: ' username
+  read -rsp 'MongoDB Password: ' password
+  printf '\n' >&2
+  security add-generic-password -a "$USER" -s "$uri" -w "$username:$password"
+  echo "$username:$password"
+}
+
+backup_cluster() {
+  local name="$1" uri="$2" dir="$root/$1" auth user dump_uri config dbs db daily target tmp cluster_failures=""
+  auth="$(credentials "$uri")" || return 1
+  user="${auth%%:*}"
+
+  # Read from a secondary, and keep the password out of command lines: mongodump reads it from a private config file,
+  # and mongosh from its environment.
+  if [[ "$uri" == *\?* ]]; then uri+="&readPreference=secondaryPreferred"; else uri+="?readPreference=secondaryPreferred"; fi
+  dump_uri="mongodb+srv://$user@$uri"
+  config="$work/$name.yml"
+  (umask 077 && printf "password: '%s'\n" "$(sed "s/'/''/g" <<< "${auth#*:}")" > "$config")
+
+  if ! dbs="$(MONGODB_BACKUP_URI="mongodb+srv://$uri" MONGODB_BACKUP_USER="$user" MONGODB_BACKUP_PASSWORD="${auth#*:}" \
+    mongosh --nodb --quiet --eval '
+      const mongo = Mongo(process.env.MONGODB_BACKUP_URI);
+      mongo.getDB("admin").auth(process.env.MONGODB_BACKUP_USER, process.env.MONGODB_BACKUP_PASSWORD);
+      mongo.getDBNames().filter((db) => !["admin", "config", "local"].includes(db)).forEach((db) => print(db));
+    ')" || [[ -z "$dbs" ]]; then
+    echo "Could not list databases in $name." >&2
+    return 1
+  fi
+
+  daily="$dir/daily/$today"
+  mkdir -p "$daily"
+  while IFS= read -r db; do
+    [[ -n "$db" ]] || continue
+    # Write next to the destination and move into place only after a complete dump, so a failure never replaces a
+    # good snapshot.
+    tmp="$daily/.$db.dump.gz.tmp"
+    if mongodump --quiet --uri="$dump_uri" --config="$config" --db="$db" --gzip --archive="$tmp" && [[ -s "$tmp" ]]; then
+      mv "$tmp" "$daily/$db.dump.gz"
+      target="$dir/$year/$db/$month-$db.dump.gz"
+      mkdir -p "$(dirname "$target")"
+      cp "$daily/$db.dump.gz" "$target.tmp" && mv "$target.tmp" "$target"
+      log "Backed up $name/$db ($(du -h "$daily/$db.dump.gz" | cut -f1))."
+    else
+      rm -f "$tmp"
+      cluster_failures+=" $name/$db"
+    fi
+  done <<< "$dbs"
+
+  if [[ -n "$cluster_failures" ]]; then
+    failures+="$cluster_failures"
+    return 0
+  fi
+
+  # Prune old daily snapshots only after a complete backup, so failing runs never delete good ones.
+  for snapshot in "$dir"/daily/*/; do
+    [[ "$(basename "$snapshot")" < "$cutoff" ]] && rm -rf "$snapshot"
+  done
+  return 0
+}
+
+if ! clusters_json="$(doctl databases list --output json)"; then
+  echo "Could not list DigitalOcean databases; authenticate with doctl auth init." >&2
+  exit 1
+fi
+
+clusters=0
+while read -r -u 3 name host; do
+  [[ -n "$name" ]] || continue
+  clusters=$((clusters + 1))
+  log "Backing up $name."
+  backup_cluster "$name" "$host/?tls=true&authSource=admin&replicaSet=$name" || failures+=" $name"
+done 3< <(jq -r '.[] | select(.engine == "mongodb") | "\(.name) \(.connection.host)"' <<< "$clusters_json")
+
+if (( clusters == 0 )); then
+  echo "No MongoDB clusters found in the DigitalOcean account." >&2
+  exit 1
+fi
+
+if [[ -n "$failures" ]]; then
+  echo "Backup failed:$failures." >&2
+  alert "MongoDB backup failed" "Could not back up:$failures." "$HOME/Library/Logs/mongodb-backup.error.log"
+  exit 1
+fi
+log "Backed up $clusters cluster(s)."

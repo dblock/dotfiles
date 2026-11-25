@@ -1,6 +1,6 @@
 #!/bin/bash
-# Sets up scheduled jobs on a new or rebuilt Mac: links and loads every LaunchAgent in LaunchAgents/,
-# and schedules a weekly wake so the Saturday jobs run. Safe to rerun; asks for sudo for pmset.
+# Sets up scheduled jobs on a new or rebuilt Mac: installs the tools they need, links and loads every LaunchAgent in
+# LaunchAgents/, and schedules a weekly wake so the Saturday jobs run. Safe to rerun; asks for sudo for pmset.
 
 set -euo pipefail
 
@@ -12,6 +12,11 @@ domain="gui/$(id -u)"
 # only one repeating wake schedule, so this replaces any other `pmset repeat` setting.
 wake_days="S"
 wake_time="02:55:00"
+
+# Tools the scheduled jobs need, from Homebrew.
+for formula in jq doctl mongosh mongodb-database-tools; do
+  brew list --formula "$formula" > /dev/null 2>&1 || brew install "$formula"
+done
 
 mkdir -p "$agents_dir"
 for plist in "$dir"/LaunchAgents/*.plist; do

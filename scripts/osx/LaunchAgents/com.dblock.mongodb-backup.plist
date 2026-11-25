@@ -6,12 +6,8 @@
   <string>com.dblock.mongodb-backup</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/bin/sh</string>
-    <string>-c</string>
-    <string>./run.sh</string>
+    <string>/Users/dblock/source/dotfiles/bash/bin/mongodb-backup</string>
   </array>
-  <key>WorkingDirectory</key>
-  <string>/Users/dblock/Dropbox/Personal/DigitalOcean/mongo/backup/db-mongodb-nyc3-slack-bots</string>
   <key>StartCalendarInterval</key>
   <dict>
     <key>Hour</key>

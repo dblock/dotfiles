@@ -37,6 +37,21 @@ fi
 echo $$ > "$lock"
 trap 'rm -f "$lock"' EXIT
 
+# Shows an alert that stays until dismissed, with a button to open a file, unless running in a terminal, which shows
+# the error already. It gives up after 12 hours, so a scheduled job never waits for its next run.
+alert() {
+  local title="$1" message="$2" file="$3"
+  [[ -t 2 ]] && return 0
+  osascript -e 'on run argv' \
+    -e 'set answer to display alert (item 1 of argv) message (item 2 of argv) as critical buttons {"Dismiss", "Open"} default button "Open" giving up after 43200' \
+    -e 'if button returned of answer is "Open" then do shell script "open " & quoted form of (item 3 of argv)' \
+    -e 'end run' "$title" "$message" "$file" > /dev/null 2>&1 || true
+}
+
+notify() {
+  osascript -e "display notification \"$2\" with title \"$1\"" > /dev/null 2>&1 || true
+}
+
 claude_bin="$(command -v claude || echo "$HOME/.local/bin/claude")"
 
 # Use the Claude subscription login, never an API key that happens to be in the environment.
@@ -67,9 +82,8 @@ cost="$(jq -r '.total_cost_usd // empty' "$json" 2>/dev/null || true)"
 echo "$(date '+%F %T'): Sweep finished with status $status${cost:+, cost \$$cost}."
 
 if (( status == 0 )); then
-  message="Sweep finished; report in $report."
+  notify update-dependencies "Sweep finished${cost:+, cost \$$cost}; report in $report."
 else
-  message="Sweep failed with status $status; see $report."
+  alert "Dependency sweep failed" "The sweep exited with status $status." "$report"
 fi
-osascript -e "display notification \"$message\" with title \"update-dependencies\"" || true
 exit "$status"
