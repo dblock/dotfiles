@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+  :root {
+    --bg: #f6f5f1; --panel: #fffdf9; --ink: #172033; --muted: #4a5466; --line: #dad7ce;
+    --accent: #2458c6; --accent-soft: #e6edfa;
+    --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; --mono: "JetBrains Mono", Menlo, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #11161f; --panel: #1a2130; --ink: #e8ebf0; --muted: #a9b3c2; --line: #2c3546;
+      --accent: #8fb1f5; --accent-soft: #1f2b44; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #11161f; --panel: #1a2130; --ink: #e8ebf0; --muted: #a9b3c2; --line: #2c3546;
+    --accent: #8fb1f5; --accent-soft: #1f2b44; color-scheme: dark;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font: 17px/1.55 var(--sans); }
+  main { max-width: 1120px; margin: 0 auto; padding: 40px 16px 64px; }
+  .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.15; margin: 8px 0 10px; }
+  .description { color: var(--muted); max-width: 760px; }
+  .meta { margin-top: 10px; font-size: 14px; color: var(--muted); }
+  video { display: block; width: 100%; aspect-ratio: 16 / 9; margin: 28px 0; border-radius: 12px; background: #000; border: 1px solid var(--line); }
+  .panels { display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 760px) { .panels { grid-template-columns: 1fr; } }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  h2 { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+  ol { list-style: none; }
+  button.item {
+    all: unset; box-sizing: border-box; display: grid; grid-template-columns: 64px 1fr; gap: 10px;
+    width: 100%; padding: 8px 10px; border-radius: 8px; cursor: pointer;
+  }
+  button.item:hover { background: var(--accent-soft); }
+  button.item:focus-visible { outline: 2px solid var(--accent); }
+  button.item.current { background: var(--accent-soft); }
+  .time { font: 13px/1.9 var(--mono); color: var(--muted); }
+  button.item.current .time { color: var(--accent); }
+  #transcript { max-height: 520px; overflow-y: auto; }
+  #transcript .text { font-size: 16px; }
+  .scene-break { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 8px; }
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">Video explainer</p>
+  <h1>__TITLE__</h1>
+  <p class="description">__DESCRIPTION__</p>
+  <p class="meta">__META__</p>
+  <video id="video" controls preload="metadata" playsinline>
+    <source src="video.mp4" type="video/mp4">
+  </video>
+  <div class="panels">
+    <section><h2>Chapters</h2><ol id="chapters"></ol></section>
+    <section><h2>Transcript</h2><ol id="transcript"></ol></section>
+  </div>
+</main>
+<script>
+  const DATA = /*__DATA__*/null;
+  const video = document.getElementById("video");
+  const clock = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+
+  // Captions travel inside the page: the host serves no .vtt files, but a blob: URL works.
+  const track = document.createElement("track");
+  Object.assign(track, { kind: "captions", srclang: "en", label: "English", default: true });
+  track.src = URL.createObjectURL(new Blob([DATA.captions], { type: "text/vtt" }));
+  video.append(track);
+
+  function list(el, items, label) {
+    return items.map((item, i) => {
+      const li = document.createElement("li");
+      if (label === "text" && i > 0 && items[i - 1].scene !== item.scene) li.className = "scene-break";
+      const button = document.createElement("button");
+      button.className = "item";
+      button.innerHTML = '<span class="time"></span><span class="text"></span>';
+      button.querySelector(".time").textContent = clock(item.start);
+      button.querySelector(".text").textContent = item[label];
+      button.addEventListener("click", () => {
+        video.currentTime = item.start;
+        video.play().catch(() => {});
+      });
+      li.append(button);
+      el.append(li);
+      return button;
+    });
+  }
+
+  const chapterButtons = list(document.getElementById("chapters"), DATA.chapters, "title");
+  const lineButtons = list(document.getElementById("transcript"), DATA.transcript, "text");
+  const transcriptBox = document.getElementById("transcript");
+
+  function mark(buttons, items, t) {
+    let index = -1;
+    items.forEach((item, i) => { if (t >= item.start - 0.05) index = i; });
+    buttons.forEach((b, i) => b.classList.toggle("current", i === index));
+    return buttons[index];
+  }
+
+  video.addEventListener("timeupdate", () => {
+    mark(chapterButtons, DATA.chapters, video.currentTime);
+    const line = mark(lineButtons, DATA.transcript, video.currentTime);
+    if (line && !video.paused) {
+      const box = transcriptBox.getBoundingClientRect();
+      const r = line.getBoundingClientRect();
+      if (r.top < box.top || r.bottom > box.bottom) {
+        transcriptBox.scrollTop += r.top - box.top - box.height / 3;
+      }
+    }
+  });
+</script>
+</body>
+</html>

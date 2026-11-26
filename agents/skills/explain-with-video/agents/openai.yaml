@@ -1,0 +1,3 @@
+# Codex: only run this skill when asked ($explain-with-video), never on its own.
+policy:
+  allow_implicit_invocation: false

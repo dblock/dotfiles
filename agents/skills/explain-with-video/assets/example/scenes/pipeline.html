@@ -1,0 +1,17 @@
+<section class="scene">
+  <p class="eyebrow">scripts/make.mjs</p>
+  <h2>One command, four stages</h2>
+  <div class="diagram">
+    <div class="node blue" data-step="1" style="left:0;top:40px;width:360px;height:200px">tts<br>narration per step</div>
+    <div class="node blue" data-step="2" style="left:436px;top:40px;width:360px;height:200px">render<br>frames in Chromium</div>
+    <div class="node blue" data-step="3" style="left:872px;top:40px;width:360px;height:200px">assemble<br>ffmpeg, captions</div>
+    <div class="node" data-step="4" style="left:1308px;top:40px;width:356px;height:200px">page<br>video page</div>
+    <svg class="wires" viewBox="0 0 1664 600">
+      <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4a5466" stroke="none"/></marker></defs>
+      <path class="draw" data-step="2" data-emph="none" pathLength="1" marker-end="url(#arrow)" d="M362 140 L432 140"/>
+      <path class="draw" data-step="3" data-emph="none" pathLength="1" marker-end="url(#arrow)" d="M798 140 L868 140"/>
+      <path class="draw" data-step="4" data-emph="none" pathLength="1" marker-end="url(#arrow)" d="M1234 140 L1304 140"/>
+    </svg>
+    <p class="small mono" style="position:absolute;left:0;top:300px;width:1664px">node scripts/make.mjs &lt;project&gt; [all|tts|render|assemble|page] [--scene &lt;id&gt;]</p>
+  </div>
+</section>

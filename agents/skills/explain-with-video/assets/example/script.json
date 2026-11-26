@@ -1,0 +1,71 @@
+{
+  "title": "How explain-with-video works",
+  "description": "A six-scene example: a cover, the contents, what the skill makes, its four build stages, how a scene marks what appears and what lights up, and a real build.",
+  "meta": "marekkirejczyk/skills · skills/explain-with-video/assets/example",
+  "lexicon": {
+    "explain-with-video": "explain with video",
+    "MP4": "M P 4",
+    "HTML": "H T M L",
+    "ffmpeg": "F F mpeg",
+    "data-step": "data step",
+    "data-focus": "data focus",
+    "data-emph": "data emph"
+  },
+  "scenes": [
+    {
+      "id": "cover",
+      "title": "explain-with-video",
+      "steps": [
+        "explain-with-video turns a repository or a pull request into a narrated explainer."
+      ]
+    },
+    {
+      "id": "contents",
+      "title": "Contents",
+      "steps": [
+        "First, a summary of what the skill makes.",
+        "Then the four stages of a build.",
+        "Then how a scene marks what appears and what lights up.",
+        "And last, a real build."
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "What it makes",
+      "steps": [
+        "Each scene reveals its items one by one, and highlights the one the voice is talking about.",
+        "The result is an MP4 with captions, on a page with chapters and a transcript."
+      ]
+    },
+    {
+      "id": "pipeline",
+      "title": "Four stages",
+      "steps": [
+        "One command builds the video. It runs four stages, in order.",
+        "First, speech. Every step's narration becomes a sound file, cached, so an edit only re-records what changed.",
+        "Then render. Chromium plays each step's animation, and the script captures it frame by frame.",
+        "Assemble joins the frames and the narration with ffmpeg, so every picture lasts exactly as long as its sentence.",
+        "Finally, page writes the video page, ready to publish."
+      ]
+    },
+    {
+      "id": "scene",
+      "title": "A scene",
+      "steps": [
+        "A scene is one HTML file, nineteen twenty by ten eighty.",
+        "data-step says when an item appears. It is highlighted at that step, and dims afterwards.",
+        "data-focus highlights an item again later: here, a single line of code.",
+        "And data-emph none keeps a container out of the highlight, so only its lines light up."
+      ]
+    },
+    {
+      "id": "build",
+      "title": "A real build",
+      "steps": [
+        "Here is the real output of building this example with macOS speech.",
+        "Narration and frames for all nineteen steps, scene by scene.",
+        "And the finished video, with its length and size, ready for the page."
+      ]
+    }
+  ]
+}
