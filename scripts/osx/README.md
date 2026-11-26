@@ -7,7 +7,7 @@ Setup scripts for macOS, run after [setup.sh](../setup.sh).
 [schedule.sh](schedule.sh) installs the tools the jobs need with Homebrew (`jq`, `doctl`, `mongosh`, and `mongodb-database-tools`), links and loads every LaunchAgent in [LaunchAgents](LaunchAgents) and schedules a daily 4:55 wake with `sudo pmset repeat`, so jobs run while the Mac would otherwise sleep; launchd runs a job missed during sleep when the Mac wakes, so the wake also starts a Saturday sweep the Mac slept through. macOS keeps only one repeating wake schedule, so it replaces any other. Rerun it after adding or changing a LaunchAgent, or on a new Mac.
 
 | LaunchAgent | Schedule | Log |
-|---|---|---|
+| --- | --- | --- |
 | [com.dblock.cargo-clean-all](LaunchAgents/com.dblock.cargo-clean-all.plist) | Sundays at 3:00. | `~/Library/Logs/cargo-clean-all.log` |
 | [com.dblock.mongodb-backup](LaunchAgents/com.dblock.mongodb-backup.plist) | Daily at 5:00, running [mongodb-backup](../../bash/bin/mongodb-backup) to back up MongoDB clusters to Dropbox, keeping 30 daily and all monthly snapshots. | `~/Library/Logs/mongodb-backup.log` |
 | [com.dblock.update-dependencies](LaunchAgents/com.dblock.update-dependencies.plist) | Every other Saturday at 3:00. | `~/Library/Logs/update-dependencies.log` |
