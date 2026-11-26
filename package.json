@@ -1,0 +1,30 @@
+{
+  "name": "dotfiles",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "devDependencies": {
+    "@cspell/dict-software-terms": "^5.4.11",
+    "@eslint/markdown": "^9.0.0",
+    "eslint": "^10.15.0",
+    "eslint-plugin-markdown-links": "^0.9.1",
+    "eslint-plugin-markdown-links-unlinked": "^0.1.0",
+    "eslint-plugin-markdown-preferences": "^0.43.0",
+    "eslint-plugin-markdown-preferences-paragraph": "^0.3.0",
+    "eslint-plugin-prose-spellcheck": "^0.2.0"
+  },
+  "overrides": {
+    "eslint-plugin-markdown-links": {
+      "@eslint/markdown": "$@eslint/markdown"
+    },
+    "eslint-plugin-markdown-preferences": {
+      "@eslint/markdown": "$@eslint/markdown"
+    }
+  }
+}
