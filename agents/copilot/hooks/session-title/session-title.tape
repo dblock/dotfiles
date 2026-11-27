@@ -1,4 +1,5 @@
 # Record real Copilot CLI sessions named by the session-title hook and rename_session.
+# The third session starts with "/new <prompt>", which is named the same way.
 # Render here with "./record.sh" to isolate demo sessions from real sessions.
 # The recorder links the real hooks and instructions and removes its temporary state.
 # Plan mode and a demo-only instruction prevent implementation.
@@ -36,10 +37,7 @@ Enter
 Wait+Screen@90s /Renamed this session to \S+ gmail-toggle/
 Wait+Screen@90s /Starting:/
 Sleep 4s
-Type "/new"
-Enter
-Sleep 2s
-Type "speed up the testlanes CI"
+Type "/new speed up the testlanes CI"
 Sleep 0.5s
 Enter
 Wait+Screen@90s /Renamed this session to \S+ testlanes/
