@@ -21,7 +21,14 @@
     "deny": [],
     "defaultMode": "bypassPermissions"
   },
-  "extraKnownMarketplaces": {},
+  "extraKnownMarketplaces": {
+    "dblock": {
+      "source": {
+        "source": "github",
+        "repo": "dblock/agent-marketplace"
+      }
+    }
+  },
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": true,
   "autoCompactWindow": 200000,
@@ -31,5 +38,8 @@
   "editorMode": "normal",
   "autoContinueAtUsageLimit": false,
   "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "enabledPlugins": {
+    "agent-baby-names@dblock": true
+  }
 }
