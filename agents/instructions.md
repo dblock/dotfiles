@@ -72,6 +72,16 @@ Use one `matrix.entry` array of explicit combinations as compact inline YAML map
 
 Maintain configured coverage reporting and applicable Danger checks. Danger runs in PR CI, not as routine standalone local validation; verify its actual PR result and document the distinction.
 
+## Context Efficiency
+
+Every tool call re-sends the whole conversation, so prefer fewer calls with focused output.
+
+- Combine independent read-only shell commands, such as status checks, file reads, and searches, into one call. Read only the needed lines of a file, and limit noisy output with `head`, `tail`, `--quiet`, or filters.
+- Wait for long-running work such as CI, deploys, and builds with one blocking command in the background, for example `gh pr checks <number> --watch` or `gh run watch <id>`. Never poll with `sleep` loops or repeated status checks.
+- Resize screenshots before viewing them (`sips -Z 1000 <file>`) and view only the ones needed to confirm a result. Extract the relevant pages or text from PDF files and other large files instead of reading them whole.
+- Delegate broad searches, log trawls, and screenshot inspection to subagents and keep only their conclusions.
+- When a task is finished and the user starts unrelated work, suggest a fresh session and offer a handoff rather than carrying the old context forward.
+
 ## Handoffs
 
 When writing a handoff for another agent, session, or person to continue the work, also copy the complete handoff text to the clipboard (with `pbcopy` on macOS, passing the text on stdin) and say that it was copied. Still show the handoff in the response.
