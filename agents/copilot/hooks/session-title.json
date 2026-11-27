@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "hooks": {
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "bash": "\"$COPILOT_HOOK_DIR/session-title/session-title.sh\"",
+        "timeoutSec": 45
+      }
+    ]
+  }
+}
