@@ -14,7 +14,8 @@ unset HISTFILE
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 [[ -s "$HOME/.nvm/nvm.sh" ]] && source "$HOME/.nvm/nvm.sh"
 [[ -s "$HOME/.nvm/bash_completion" ]] && source "$HOME/.nvm/bash_completion"
-[[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm" # Load GVM into a shell session *as a function*
+# Load GVM into a shell session *as a function*, except in Claude Code, whose shell snapshots keep GVM's cd wrapper but drop its _encode/_decode helpers.
+[[ -z "$CLAUDECODE" && -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
 [[ -s "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 [[ -f '/Applications/google-cloud-sdk/path.bash.inc' ]] && source '/Applications/google-cloud-sdk/path.bash.inc'
 [[ -f '/Applications/google-cloud-sdk/completion.bash.inc' ]] && source '/Applications/google-cloud-sdk/completion.bash.inc'
