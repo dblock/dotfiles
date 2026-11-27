@@ -1,79 +1,38 @@
 #!/bin/bash
-# Tests for session-title.sh against a temporary project root and a fake claude command. Run directly.
-set -u
+# Tests for the Claude Code session-title hook, using a fake shared title script. Run directly.
+set -uo pipefail
+
 hook="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/session-title.sh"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
-failures=0
-
-root="$tmp/source"
-mkdir -p "$root/testlanes/master/.git" "$root/testlanes/implementation/.git" \
-  "$root/excalc/.git" "$root/excalc-rs/.git" "$root/mongoid/mongoid_fulltext/upstream-mongoid_fulltext/.git" \
-  "$root/mongoid/mongoid_orderable/.git" "$root/g/.git"
-printf 'testlanes 🧪\n' >"$tmp/pins.txt"
-
-# A fake claude that records each call and question, and answers emoji questions with 🦀 and title requests with a title.
-cat >"$tmp/claude" <<'FAKE'
+export SESSION_TITLE_SCRIPT="$tmp/shared.sh" SHARED_LOG="$tmp/shared.log"
+cat >"$SESSION_TITLE_SCRIPT" <<'SHARED'
 #!/bin/bash
-question="$(cat)"
-echo "$* :: $question" >>"$FAKE_LOG"
-case "$question" in
-  *"one emoji"*) echo "🦀" ;;
-  *) echo "🔊 Loud Laptop Fan" ;;
-esac
-FAKE
-chmod +x "$tmp/claude"
-export FAKE_LOG="$tmp/calls.log"
-touch "$FAKE_LOG"
+cat >>"$SHARED_LOG"
+echo >>"$SHARED_LOG"
+echo "ask=$SESSION_TITLE_ASK" >>"$SHARED_LOG"
+[[ -n "${FAKE_TITLE:-}" ]] && echo "$FAKE_TITLE"
+exit 0
+SHARED
+chmod +x "$SESSION_TITLE_SCRIPT"
+touch "$SHARED_LOG"
 
-run() {
-  jq -n --arg prompt "$1" --arg cwd "${2:-$tmp}" --arg title "${3:-}" \
-    '{prompt: $prompt, cwd: $cwd} + (if $title == "" then {} else {session_title: $title} end)' |
-    SESSION_TITLE_ROOT="$root" SESSION_TITLE_PINS="$tmp/pins.txt" SESSION_TITLE_CACHE="$tmp/cache" \
-      SESSION_TITLE_CLAUDE="$tmp/claude" "$hook" | jq -r '.hookSpecificOutput.sessionTitle // empty'
+failures=0
+check() {
+  if [[ "$2" == "$3" ]]; then echo "ok - $1"; else echo "not ok - $1: expected [$3], got [$2]"; failures=$((failures + 1)); fi
 }
 
-lookup_cache() {
-  [[ -f "$tmp/cache/emojis.txt" ]] && awk -v p="$1" '$1 == p { print $2 }' "$tmp/cache/emojis.txt"
-}
+out="$(jq -cn '{session_id: "s1", prompt: "speed up the testlanes CI", cwd: "/work"}' | FAKE_TITLE='🧪 testlanes' "$hook" | jq -c .)"
+check "sets the session title" "$out" '{"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","sessionTitle":"🧪 testlanes"}}'
+check "passes the prompt and cwd to the shared script" "$(head -1 "$SHARED_LOG")" '{"prompt":"speed up the testlanes CI","cwd":"/work"}'
 
-expect() {
-  local name="$1" expected="$2" actual="$3"
-  if [[ "$actual" == "$expected" ]]; then
-    echo "ok - $name"
-  else
-    echo "not ok - $name: expected '$expected', got '$actual'"
-    failures=$((failures + 1))
-  fi
-}
+check "asks Haiku through Claude Code" "$(grep -c "^ask=.*/claude/hooks/session-title/ask-haiku.sh$" "$SHARED_LOG")" "1"
 
-expect "pinned project in prompt" "🧪 testlanes" "$(run "let's improve TestLanes.")"
-expect "longest matching project" "🦀 excalc-rs" "$(run "port excalc to excalc-rs")"
-expect "organization subdirectory, hyphenated" "🦀 mongoid-fulltext" "$(run "fix mongoid_fulltext search")"
-expect "container checkouts are not projects" "🔊 loud-laptop-fan" "$(run "work on implementation")"
-expect "short names are ignored" "🔊 loud-laptop-fan" "$(run "g is great")"
-expect "working directory project" "🧪 testlanes" "$(run "fix the build" "$root/testlanes/master/lib")"
-expect "working directory in organization" "🦀 mongoid-orderable" "$(run "fix the build" "$root/mongoid/mongoid_orderable")"
-expect "existing title is kept" "" "$(run "improve testlanes" "$tmp" "my-title")"
-expect "nested hook does nothing" "" "$(SESSION_TITLE_NESTED=1 run "improve testlanes")"
+: >"$SHARED_LOG"
+check "keeps an existing title" "$(jq -cn '{prompt: "improve testlanes", cwd: "/", session_title: "my-title"}' | FAKE_TITLE='🧪 testlanes' "$hook")" ""
+check "does not call the shared script for a titled session" "$(grep -c . "$SHARED_LOG")" "0"
+check "keeps a given ask command" "$(jq -cn '{prompt: "x", cwd: "/"}' | SESSION_TITLE_ASK=/bin/mine "$hook"; grep -c '^ask=/bin/mine$' "$SHARED_LOG")" "1"
 
-run "update excalc" >/dev/null
-: >"$FAKE_LOG"
-expect "cached emoji" "🦀 excalc" "$(run "update excalc")"
-expect "cached emoji skips Haiku" "0" "$(grep -c 'one emoji' "$FAKE_LOG" | tr -d ' ')"
-expect "Haiku title topic is slugged" "🔊 loud-laptop-fan" "$(run "why is my laptop fan loud")"
-expect "Haiku call disables hooks" "1" "$(grep -c 'disableAllHooks' "$FAKE_LOG" | tr -d ' ')"
-expect "emojis cached once" "excalc 🦀" "$(grep '^excalc ' "$tmp/cache/emojis.txt")"
+check "stays quiet without a title" "$(jq -cn '{prompt: "hello", cwd: "/"}' | FAKE_TITLE='' "$hook")" ""
 
-touch -t 202001010000 "$tmp/cache/projects.txt"
-mkdir -p "$root/newproject/.git"
-expect "project cache rebuilds when root changes" "🦀 newproject" "$(run "start newproject")"
-
-printf '#!/bin/bash\necho "not an emoji"\n' >"$tmp/claude" && rm -f "$tmp/cache/emojis.txt"
-expect "invalid Haiku emoji falls back and is not cached" "🗂️ excalc" "$(run "update excalc")"
-expect "invalid emoji not cached" "" "$(lookup_cache excalc)"
-
-expect "unavailable Haiku keeps generated title" "" "$(echo '{"prompt":"hello there","cwd":"/"}' |
-  SESSION_TITLE_ROOT="$root" SESSION_TITLE_CACHE="$tmp/cache" SESSION_TITLE_CLAUDE=false "$hook")"
-
-exit "$failures"
+[[ "$failures" -eq 0 ]] || { echo "$failures failed"; exit 1; }

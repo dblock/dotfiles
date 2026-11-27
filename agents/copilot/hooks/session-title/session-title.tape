@@ -24,26 +24,26 @@ Sleep 1.5s
 Type "let's add some emojis to our dotfiles"
 Sleep 0.5s
 Enter
-Wait+Screen@90s /🏠 dotfiles/
-Wait+Screen@90s /Ready\./
-Sleep 2s
+Wait+Screen@90s /Renamed this session to \S+ dotfiles/
+Wait+Screen@90s /Starting:/
+Sleep 4s
 Type "/new"
 Enter
 Sleep 2s
 Type "fix the label sync in gmail-toggle"
 Sleep 0.5s
 Enter
-Wait+Screen@90s /📧 gmail-toggle/
-Wait+Screen@90s /Ready\./
-Sleep 2s
+Wait+Screen@90s /Renamed this session to \S+ gmail-toggle/
+Wait+Screen@90s /Starting:/
+Sleep 4s
 Type "/new"
 Enter
 Sleep 2s
 Type "speed up the testlanes CI"
 Sleep 0.5s
 Enter
-Wait+Screen@90s /🧪 testlanes/
-Wait+Screen@90s /Ready\./
+Wait+Screen@90s /Renamed this session to \S+ testlanes/
+Wait+Screen@90s /Starting:/
 Sleep 2s
 Left
 Sleep 3s
