@@ -18,6 +18,23 @@ Keep `instructions.md` tool-neutral and put tool-specific behavior, such as co-a
 
 See [Hooks](claude/hooks/README.md) for the Claude Code hooks and how to add one.
 
+## Copilot Session Names
+
+![New Copilot CLI sessions named after their projects, with emojis](copilot/hooks/session-title/session-title.gif)
+
+Copilot CLI hooks can't set a session title, so the [session-title hook](copilot/hooks/session-title.json) does the next best thing. On the first prompt of each session, [its script](copilot/hooks/session-title/session-title.sh) computes the title with the existing [Claude Code session title script](claude/hooks/session-title/README.md) and adds context asking the agent to pass that exact name to `rename_session`. Project matching, pinned emojis, the cache, and Haiku calls are shared with Claude Code. The hook records seen session IDs in `~/.copilot/session-title`, so later prompts and resumed sessions are left alone, and `rename_session` preserves user-chosen names.
+
+Setup links `agents/copilot/hooks` to `~/.copilot/hooks` and enables the session tools when Copilot CLI is installed, limiting session access to the current Copilot process. To enable them without running setup, use:
+
+```sh
+copilot config sessionManagementTools.scope in-process
+copilot config sessionManagementTools.enabled on
+```
+
+The agent still makes the rename call, so naming is best effort. Sessions without the tool, including non-interactive `-p` runs, skip it.
+
+The [demo video](copilot/hooks/session-title/session-title.mp4) and GIF are recorded from [a VHS tape](copilot/hooks/session-title/session-title.tape). Run [`./record.sh`](copilot/hooks/session-title/record.sh) from `agents/copilot/hooks/session-title`, with VHS and an authenticated GitHub CLI installed. It reuses the existing GitHub token without printing it, creates an isolated Copilot home linked to the real hooks and instructions, and removes that temporary state afterwards, so unrelated sessions stay out of the recording. The tape uses plan mode and a demo-only instruction to stop after naming, without changing project files.
+
 ## Skills
 
 See [Skills](skills/README.md) for the shared skills and how to add one.

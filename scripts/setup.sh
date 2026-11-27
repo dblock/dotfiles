@@ -31,6 +31,21 @@ link_agent_file "$DOTFILES_DIR/agents/copilot/copilot.instructions.md" "$HOME/.c
 link_agent_file "$DOTFILES_DIR/agents/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 link_agent_file "$DOTFILES_DIR/agents/claude/settings.json" "$HOME/.claude/settings.json"
 link_agent_file "$DOTFILES_DIR/agents/claude/hooks" "$HOME/.claude/hooks"
+link_agent_file "$DOTFILES_DIR/agents/copilot/hooks" "$HOME/.copilot/hooks"
+
+if command -v copilot >/dev/null 2>&1; then
+  copilot_settings="${COPILOT_HOME:-$HOME/.copilot}/settings.json"
+  mkdir -p "$(dirname "$copilot_settings")"
+  [[ -f "$copilot_settings" ]] || printf '{}\n' >"$copilot_settings"
+  copilot_settings_tmp="$(mktemp "$copilot_settings.XXXXXX")"
+  if jq '.sessionManagementTools = ((.sessionManagementTools // {}) + {scope: "in-process", enabled: true})' \
+    "$copilot_settings" >"$copilot_settings_tmp"; then
+    mv "$copilot_settings_tmp" "$copilot_settings"
+  else
+    rm -f "$copilot_settings_tmp"
+    exit 1
+  fi
+fi
 
 # Shared skills, linked into both tools.
 for skill_dir in "$DOTFILES_DIR"/agents/skills/*; do
