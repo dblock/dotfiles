@@ -29,5 +29,6 @@
   "editorMode": "normal",
   "autoContinueAtUsageLimit": false,
   "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "autoCompactWindow": 200000
 }
