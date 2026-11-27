@@ -1,0 +1,7 @@
+# Session Titles
+
+![New sessions named after their projects, with emojis, in the Claude Code agent view](session-title.gif)
+
+The [`session-title.sh`](session-title.sh) `UserPromptSubmit` hook, registered in [settings.json](../../settings.json), names each new Claude Code session `<emoji> <name>` from its first prompt, in lowercase words joined by hyphens, such as `🧪 testlanes`. The name is the repository under `~/source` that the prompt mentions (the longest match of at least three characters), else the repository holding the working directory, else a short topic written by Haiku, such as `🔊 loud-laptop-fan`. Top-level directories and the repositories inside organization directories count as projects; `master`, `main`, and `<user>-<repo>` or `upstream-<repo>` checkouts do not. Sessions that already have a title, from `/rename` or `--name`, are left alone.
+
+Pin a project's emoji in [`session-emojis.txt`](session-emojis.txt). Other emojis are picked by Haiku the first time a project is seen and cached in `~/.cache/claude-session-title/emojis.txt`; edit or delete lines there to change them. The project list is cached next to it and rebuilt when `~/source` changes or after a day. Haiku is asked with `claude -p --model haiku`, hooks disabled, and no saved session, which adds a second or two to the first prompt only when an answer is not cached. Run [`session-title.test.sh`](session-title.test.sh) to test the hook. The [demo video](session-title.mp4) and GIF are rendered with `vhs session-title.tape` from [`session-title.tape`](session-title.tape).

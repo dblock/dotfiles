@@ -30,6 +30,7 @@ link_agent_file "$DOTFILES_DIR/agents/instructions.md" "$HOME/.copilot/copilot-i
 link_agent_file "$DOTFILES_DIR/agents/copilot/copilot.instructions.md" "$HOME/.copilot/instructions/copilot.instructions.md"
 link_agent_file "$DOTFILES_DIR/agents/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 link_agent_file "$DOTFILES_DIR/agents/claude/settings.json" "$HOME/.claude/settings.json"
+link_agent_file "$DOTFILES_DIR/agents/claude/hooks" "$HOME/.claude/hooks"
 
 # Shared skills, linked into both tools.
 for skill_dir in "$DOTFILES_DIR"/agents/skills/*; do

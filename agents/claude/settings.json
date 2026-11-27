@@ -30,5 +30,18 @@
   "autoContinueAtUsageLimit": false,
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
-  "autoCompactWindow": 200000
+  "autoCompactWindow": 200000,
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/session-title/session-title.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
 }
