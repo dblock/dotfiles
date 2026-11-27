@@ -31,8 +31,8 @@ link_agent_file "$DOTFILES_DIR/agents/copilot/copilot.instructions.md" "$HOME/.c
 link_agent_file "$DOTFILES_DIR/agents/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 link_agent_file "$DOTFILES_DIR/agents/claude/settings.json" "$HOME/.claude/settings.json"
 link_agent_file "$DOTFILES_DIR/agents/claude/hooks" "$HOME/.claude/hooks"
-link_agent_file "$DOTFILES_DIR/agents/copilot/hooks" "$HOME/.copilot/hooks"
 
+# Copilot CLI session tools, used by the agent-baby-names plugin to name new sessions.
 if command -v copilot >/dev/null 2>&1; then
   copilot_settings="${COPILOT_HOME:-$HOME/.copilot}/settings.json"
   mkdir -p "$(dirname "$copilot_settings")"

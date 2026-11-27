@@ -1,3 +1,0 @@
-# Pinned session title emojis for the shared session-title.sh, one "<project> <emoji>" per line, using the
-# lowercase-hyphenated project name. They override emojis that a model picked and cached.
-dotfiles 🏠

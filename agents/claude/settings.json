@@ -21,27 +21,15 @@
     "deny": [],
     "defaultMode": "bypassPermissions"
   },
+  "extraKnownMarketplaces": {},
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": true,
+  "autoCompactWindow": 200000,
   "prefersReducedMotion": true,
   "skipDangerousModePermissionPrompt": true,
   "theme": "auto",
   "editorMode": "normal",
   "autoContinueAtUsageLimit": false,
   "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true,
-  "autoCompactWindow": 200000,
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/session-title/session-title.sh",
-            "timeout": 30
-          }
-        ]
-      }
-    ]
-  }
+  "agentPushNotifEnabled": true
 }

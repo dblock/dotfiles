@@ -22,8 +22,7 @@ jq -e '.theme == "light" and .sessionManagementTools == {
 [[ "$(readlink "$HOME/.copilot/instructions/copilot.instructions.md")" == \
   "$dotfiles_dir/agents/copilot/copilot.instructions.md" ]]
 [[ "$(readlink "$HOME/.claude/hooks")" == "$dotfiles_dir/agents/claude/hooks" ]]
-[[ "$(readlink "$HOME/.copilot/hooks")" == "$dotfiles_dir/agents/copilot/hooks" ]]
-echo "ok - setup enables naming and preserves unrelated settings"
+echo "ok - setup enables the Copilot session tools and preserves unrelated settings"
 
 first="$(cat "$settings")"
 bash "$dotfiles_dir/scripts/setup.sh" >/dev/null
