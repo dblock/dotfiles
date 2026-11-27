@@ -13,10 +13,11 @@ Run `npm run lint:fix` to apply automatic fixes. Add reviewed project vocabulary
 
 ## Agent Setup
 
-Run the setup tests against a temporary home, the shared session title tests against a fake project root and model CLI, and the Copilot hook tests against a fake title script:
+Run the setup tests against a temporary home, the shared session title tests against a fake project root and model CLI, and the Claude Code and Copilot hook tests against a fake title script:
 
 ```sh
 bash scripts/setup.test.sh
+agents/session-title/session-title.test.sh
 agents/claude/hooks/session-title/session-title.test.sh
 agents/copilot/hooks/session-title/session-title.test.sh
 ```

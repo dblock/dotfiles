@@ -11,7 +11,8 @@ cat >"$SESSION_TITLE_SCRIPT" <<'SHARED'
 #!/bin/bash
 cat >>"$COPILOT_HOME/../shared.log"
 echo >>"$COPILOT_HOME/../shared.log"
-[[ -n "${FAKE_TITLE:-}" ]] && jq -cn --arg t "$FAKE_TITLE" '{hookSpecificOutput: {hookEventName: "UserPromptSubmit", sessionTitle: $t}}'
+echo "ask=$SESSION_TITLE_ASK" >>"$COPILOT_HOME/../shared.log"
+[[ -n "${FAKE_TITLE:-}" ]] && echo "$FAKE_TITLE"
 exit 0
 SHARED
 chmod +x "$SESSION_TITLE_SCRIPT"
@@ -29,7 +30,8 @@ check "passes the prompt and cwd to the shared script" "$(head -1 "$tmp/shared.l
   '{"prompt":"speed up the testlanes CI","cwd":"/work"}'
 
 check "leaves later prompts alone" "$(FAKE_TITLE='🧪 testlanes' run s1 'and the lint job')" ""
-check "does not call the shared script again" "$(grep -c . "$tmp/shared.log")" "1"
+check "does not call the shared script again" "$(grep -c '^{' "$tmp/shared.log")" "1"
+check "asks Haiku through Copilot CLI" "$(grep -c "^ask=.*/copilot/hooks/session-title/ask-haiku.sh$" "$tmp/shared.log")" "1"
 
 out="$(FAKE_TITLE='💬 say "hi"' run s2 'x')"
 check "encodes quotes in the title" "$(jq -r .additionalContext <<<"$out" | cut -d. -f1)" \

@@ -15,7 +15,7 @@ ln -s "$dotfiles_dir/agents/copilot/hooks" "$COPILOT_HOME/hooks"
 cat >"$COPILOT_HOME/instructions/demo.instructions.md" <<'INSTRUCTIONS'
 # Recording Safety
 
-This is a session naming demonstration. Follow the session naming context from the hook. Do not implement the user's project request, read project files, start agents, or ask questions. After naming each new session, reply exactly "Ready." and stop.
+This is a session naming demonstration. Follow the session naming context from the hook. Do not implement the user's project request, read project files, start agents, or ask questions. After naming each new session, start on the request by replying with one sentence that begins with "Starting:" and says which part of that project you will look at first and why, then stop.
 INSTRUCTIONS
 jq -n '{
   sessionManagementTools: {enabled: true, scope: "in-process"},

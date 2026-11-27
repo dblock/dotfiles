@@ -9,6 +9,8 @@ Instructions and skills shared by Claude Code and GitHub Copilot CLI. Each tool 
 | [claude/settings.json](claude/settings.json) | Claude Code settings. | `~/.claude/settings.json` |
 | [claude/hooks](claude/hooks/README.md) | Claude Code hooks, one folder each, registered in the settings. | `~/.claude/hooks` |
 | [copilot/copilot.instructions.md](copilot/copilot.instructions.md) | Copilot CLI overrides, loaded after the shared instructions. | `~/.copilot/instructions/copilot.instructions.md` |
+| [copilot/hooks](#copilot-session-names) | Copilot CLI hooks, one JSON file each. | `~/.copilot/hooks` |
+| [session-title](session-title/README.md) | Shared session title script used by the Claude Code and Copilot CLI hooks. | Called by the hooks |
 | [skills](skills/README.md) | Shared skills. | `~/.claude/skills/<name>` and `~/.copilot/skills/<name>` |
 | [skills/update-dependencies/projects.yml](skills/update-dependencies/projects.yml) | Public include and exclude lists for update-dependencies; private entries go in an untracked `projects.local.yml` next to the link. | `~/.config/update-dependencies/projects.yml` |
 
@@ -16,13 +18,15 @@ Keep `instructions.md` tool-neutral and put tool-specific behavior, such as co-a
 
 ## Hooks
 
-See [Hooks](claude/hooks/README.md) for the Claude Code hooks and how to add one.
+See [Hooks](claude/hooks/README.md) for the Claude Code hooks and how to add one. Both tools name new sessions after their project with the [shared session title script](session-title/README.md).
 
 ## Copilot Session Names
 
 ![New Copilot CLI sessions named after their projects, with emojis](copilot/hooks/session-title/session-title.gif)
 
-Copilot CLI hooks can't set a session title, so the [session-title hook](copilot/hooks/session-title.json) does the next best thing. On the first prompt of each session, [its script](copilot/hooks/session-title/session-title.sh) computes the title with the existing [Claude Code session title script](claude/hooks/session-title/README.md) and adds context asking the agent to pass that exact name to `rename_session`. Project matching, pinned emojis, the cache, and Haiku calls are shared with Claude Code. The hook records seen session IDs in `~/.copilot/session-title`, so later prompts and resumed sessions are left alone, and `rename_session` preserves user-chosen names.
+Copilot CLI hooks can't set a session title, so the [session-title hook](copilot/hooks/session-title.json) does the next best thing. On the first prompt of each session, [its script](copilot/hooks/session-title/session-title.sh) computes the title with the [shared session title script](session-title/README.md) and adds context asking the agent to pass that exact name to `rename_session`. Project matching, pinned emojis, and the cache are shared with Claude Code. Emojis and topics also come from Haiku, asked through Copilot CLI by [`ask-haiku.sh`](copilot/hooks/session-title/ask-haiku.sh) in a throwaway Copilot home with no tools, so no hooks or instructions load and no session is saved. The hook records seen session IDs in `~/.copilot/session-title`, so later prompts and resumed sessions are left alone, and `rename_session` preserves user-chosen names.
+
+The blog post [Naming Claude Code and Copilot Sessions After Their Project](https://code.dblock.org/2026/11/27/naming-claude-code-and-copilot-sessions-after-their-project.html) explains how it works.
 
 Setup links `agents/copilot/hooks` to `~/.copilot/hooks` and enables the session tools when Copilot CLI is installed, limiting session access to the current Copilot process. To enable them without running setup, use:
 
