@@ -27,6 +27,10 @@ set -euo pipefail
 # launchd starts jobs with a minimal PATH, without Homebrew.
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
+# Keep the Mac awake until the backup finishes: launchd runs the job during a brief wake, and sleeping mid-dump drops
+# the connection and fails the database being dumped.
+caffeinate -i -w $$ &
+
 root="${1:-$HOME/Dropbox/Personal/DigitalOcean/mongo/backup}"
 keep_days=30
 today="$(date +%F)"
@@ -98,7 +102,8 @@ backup_cluster() {
     # Write next to the destination and move into place only after a complete dump, so a failure never replaces a
     # good snapshot.
     tmp="$daily/.$db.dump.gz.tmp"
-    if mongodump --quiet --uri="$dump_uri" --config="$config" --db="$db" --gzip --archive="$tmp" && [[ -s "$tmp" ]]; then
+    # Log the full mongodump output with the rest of the run, so a failure shows its cause.
+    if mongodump --uri="$dump_uri" --config="$config" --db="$db" --gzip --archive="$tmp" 2>&1 && [[ -s "$tmp" ]]; then
       mv "$tmp" "$daily/$db.dump.gz"
       target="$dir/$year/$db/$month-$db.dump.gz"
       mkdir -p "$(dirname "$target")"
@@ -142,7 +147,7 @@ fi
 
 if [[ -n "$failures" ]]; then
   echo "Backup failed:$failures." >&2
-  alert "MongoDB backup failed" "Could not back up:$failures." "$HOME/Library/Logs/mongodb-backup.error.log"
+  alert "MongoDB backup failed" "Could not back up:$failures." "$HOME/Library/Logs/mongodb-backup.log"
   exit 1
 fi
 log "Backed up $clusters cluster(s)."

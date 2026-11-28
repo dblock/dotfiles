@@ -26,4 +26,4 @@ Credentials are a generic password in the login keychain, with the connection st
 
 On a new Mac, authenticate `doctl` with `doctl auth init`, run `mongodb-backup` once from a terminal to store the credentials (the `doadmin` password is in the DigitalOcean console), and run [schedule.sh](schedule.sh).
 
-When a job fails, it shows an alert that stays until dismissed, with an Open button for the backup error log or the sweep report; it gives up after 12 hours and is skipped when the job runs in a terminal. A finished sweep also posts a notification.
+When a job fails, it shows an alert that stays until dismissed, with an Open button for the backup log, which includes the full `mongodump` output, or the sweep report; it gives up after 12 hours and is skipped when the job runs in a terminal. A finished sweep also posts a notification.
